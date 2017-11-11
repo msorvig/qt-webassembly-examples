@@ -1,5 +1,5 @@
 TEMPLATE = subdirs
 
 SUBDIRS = \
-    window_opengl \
+    gui_opengl \
     

@@ -1,5 +1,5 @@
 TEMPLATE = app
-TARGET = window_opengl
+TARGET = gui_opengl
 
 HEADERS += hellowindow.h
 SOURCES += hellowindow.cpp main.cpp

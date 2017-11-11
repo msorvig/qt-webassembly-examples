@@ -41,12 +41,11 @@
 #include "hellowindow.h"
 
 #include <QtGui>
-#include <QtWidgets>
 #include <QScreen>
 
 int main(int argc, char **argv)
 {
-    QApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
     
     QSurfaceFormat format;
     format.setDepthBufferSize(16);

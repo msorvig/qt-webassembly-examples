@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>
+  Clipboard testing
+  </title>
+  
+  <script>
+    console.log("hello");
+    
+    function $(id) {
+      return document.getElementById(id)
+    }
+    
+    function installEventHandlers(){
+      console.log("installEventHandlers")
+      var canvas = $("testcanvas");
+      console.log(canvas)
+      
+//      canvas.contentEditable=true;
+      canvas.focus();
+
+      var ctx = canvas.getContext("2d");
+      ctx.fillStyle = "blue";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+
+      canvas.addEventListener('copy', function (ev) {
+        console.log('canvas clipboard copy');
+        ev.clipboardData.setData('text/plain', 'TEST TEST TEST: ' + new Date);
+        ev.preventDefault();
+      }, true);
+
+      canvas.addEventListener('paste', function (ev) {
+        console.log('canvas clipboard paste ' + ev.clipboardData.getData('text'));
+        ev.preventDefault();
+      }, true);
+      
+
+      canvas.addEventListener('keydown', function (ev) {
+        console.log('canvas keydown');
+       // ev.preventDefault();
+      }, false);
+
+      canvas.addEventListener('keyup', function (ev) {
+         console.log('canvas keyup');
+        // ev.preventDefault();
+      }, false);
+
+
+     document.addEventListener('copy', function (ev) {
+        console.log('document clipboard copy');
+        ev.clipboardData.setData('text', 'TEST TEST TEST: ' + new Date);
+        ev.preventDefault();
+      }, true);
+
+      document.addEventListener('paste', function (ev) {
+       ev.preventDefault();
+        console.log('document clipboard paste ' + ev.clipboardData.getData('text'));
+      }, true);
+
+    }
+
+    
+  </script>
+</head>
+<body onload=installEventHandlers()>
+  Trigger copy/paste and check the console log.
+  <canvas id="testcanvas" tabindex="0"> </canvas>
+</body>
+</html>

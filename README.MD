@@ -12,6 +12,14 @@ for live demos.
 further information on the Qt for WebAssembly port.
 
 Note on cloning this repository: The gh-pages branch contains the example
-binaries. Clone with --single-branch to avoid a multi-MB download:
+binaries. Clone with --single-branch to minimize download size.
 
     git clone -b master --single-branch git@github.com:msorvig/qt-webassembly-examples.git
+
+Example Categories:
+
+    html_          html behavior test cases (no Qt usage)
+    emscripten_    emscripten behavior test cases (no Qt usage)
+    gui_           Qt Gui examples
+    widgets_       Qt Widgets examples
+    quick_         Qt Quick examples

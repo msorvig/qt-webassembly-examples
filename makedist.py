@@ -24,7 +24,7 @@ for dir in dirs:
     
     # skip some intermediate build artifacts
     def skipFile(name):
-        return name.endswith(".cpp") or name == "Makefile"
+        return name.endswith(".cpp") or name.endswith(".h") or name.endswith(".o") or name == "Makefile"
     prunedFiles = list(filter(lambda x: not skipFile(x), files))
 
     # copy all files

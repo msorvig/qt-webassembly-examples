@@ -4,14 +4,17 @@
   <title>
   Multipass
   </title>
-  
+
   <script>
     function $(id) {
       return document.getElementById(id)
     }
-    
+
     function onload(){
-      
+        var module = {}
+       // module.canvas = $("canvas-a"); // can be omitted if native code does not 
+                                         // use the default canvas
+        Module(module);
     }
     
   </script>
@@ -24,5 +27,6 @@
       <canvas id="canvas-c"> </canvas>
       <canvas id="canvas-d"> </canvas>
   </div>
+    {{{ SCRIPT }}}
 </body>
 </html>

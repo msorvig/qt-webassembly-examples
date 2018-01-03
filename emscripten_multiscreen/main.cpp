@@ -126,19 +126,17 @@ void printContextInfo(const char *canvasId, EMSCRIPTEN_WEBGL_CONTEXT_HANDLE cont
 }
 
 char *g_canvasIds[] = { "canvas-a", "canvas-b", "canvas-c", "canvas-d" };
-EMSCRIPTEN_WEBGL_CONTEXT_HANDLE g_context = 0;
+EMSCRIPTEN_WEBGL_CONTEXT_HANDLE g_contexts[] = {0, 0, 0, 0};
 
-void render()
+void render(int canvasIndex)
 {
-    const char *canvasId = 0;
-
-    if (!g_context)
-        g_context = createContext(canvasId);
+    if (!g_contexts[canvasIndex])
+        g_contexts[canvasIndex] = createContext(g_canvasIds[canvasIndex]);
     
-    emscripten_webgl_make_context_current(g_context);
-    printContextInfo(canvasId, g_context);
+    emscripten_webgl_make_context_current(g_contexts[canvasIndex]);
+    printContextInfo(g_canvasIds[canvasIndex], g_contexts[canvasIndex]);
     
-    glClearColor(1.f, 0.f, 0.f, 1.f);
+    glClearColor(0.2f, 0.5f, 0.3f + (canvasIndex / (4 * 3.0)), 1.f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -155,12 +153,15 @@ int main() {
     auto callback = [](int eventType, const EmscriptenUiEvent *uiEvent, void *userData) -> EM_BOOL
     {
         cout << "resize " << endl;
-        printContextInfo(0, g_context);
+        printContextInfo(0, g_contexts[0]);
         return true;
     };
     emscripten_set_resize_callback(0, data, capture, callback);
     
-    render();
+    render(0);
+    render(1);
+    render(2);
+    render(3);
     
     emscripten_set_main_loop(noop, 0, 0);
     

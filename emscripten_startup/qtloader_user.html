@@ -1,0 +1,41 @@
+<html>
+<head>
+</head>
+<body onload="init()">
+    <div>
+        Minimal emscripten html using qtloader.js
+    </div>
+    <canvas id="qt_canvas"> </canvas>
+    <div id="qt_container">
+    </div>
+    <script>
+        function init() {
+
+            console.log("init: creating QtLoader")
+            var didReload = false;
+
+            var qtLoader = QtLoader({
+                canvasElements : [document.getElementById('qt_canvas')],
+                containerElements : [document.getElementById('qt_container')],
+                statusChanged: function(status) {
+                    console.log("status changed " + status);
+
+                    // Reload on crash (once)
+                    if (status == "Exited" && qtLoader.crashed && !didReload) {
+                        didReload = true;
+
+                        // Reload once exit and error processing has completed.
+                        window.setTimeout(function() {
+                            qtLoader.loadEmscriptenModule({{{ MODULE_NAME }}});
+                        }, 0);
+                    }
+                }
+            });
+
+            qtLoader.loadEmscriptenModule({{{ MODULE_NAME }}});
+        }
+    </script>
+    <script async type="text/javascript" src="qtloader.js"></script>
+    {{{ SCRIPT }}}
+</body>
+</html>

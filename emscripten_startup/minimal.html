@@ -1,0 +1,40 @@
+<html>
+<head>
+</head>
+<body onload="init()">
+    <div>
+        <i>Really</i> minimal emscripten html.
+    </div>
+    <canvas id="emscripten_canvas">
+    <script>
+        function init() {
+
+            console.log("init: creating Module object")
+
+            // Required Module object with 'canvas' property
+            var module = Minimal()
+            module.canvas = document.getElementById('emscripten_canvas');
+
+            // Optional setStatus. We get the following calls:
+            // Before main: "Running..."
+            // After main: "" (empty)
+            module.setStatus = function(text) {
+                console.log("Module.setStatus '" + text + "'")
+            }
+
+            // Optional print and printErr through which standard out end err
+            // will be channeled
+            module.print = function(text) {
+                console.log("Module.print " + text)
+            }
+            module.printErr = function(text) {
+                console.log("Module.printErr " + text)
+            }
+        }
+    </script>
+    {{{ SCRIPT }}}
+
+</body>
+
+
+</html>

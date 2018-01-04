@@ -5,18 +5,26 @@
   Multipass
   </title>
 
+  <style type="text/css">
+  canvas {
+      width: 20%;
+      height: 200px;
+  }
+  </style>
+
+
   <script>
     function $(id) {
       return document.getElementById(id)
     }
 
-    function onload(){
+    function onload() {
         var module = {}
-       // module.canvas = $("canvas-a"); // can be omitted if native code does not 
+       // module.canvas = $("canvas-a"); // can be omitted if native code does not
                                          // use the default canvas
         Module(module);
     }
-    
+
   </script>
 </head>
 <body onload=onload()>

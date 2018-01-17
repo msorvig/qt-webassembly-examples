@@ -1,34 +1,38 @@
 <html>
 <head>
+    <style>
+    #qt_container {
+        width: 320px;
+        height: 200px;
+
+        /* Center Qt Placeholder content */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    </style>
 </head>
 <body onload="init()">
     <div>
         Minimal emscripten html using qtloader.js
     </div>
-    <canvas id="qt_canvas"> </canvas>
     <div id="qt_container">
+        <noscript>
+            <h3>JavaScript is disabled. Please enable JavaScript to use Qt for WebAssembly.</h3>
+        </noscript>            
     </div>
     <script>
         function init() {
 
             console.log("init: creating QtLoader")
-            var didReload = false;
+            var container = document.getElementById('qt_container');
 
             var qtLoader = QtLoader({
-                canvasElements : [document.getElementById('qt_canvas')],
-                containerElements : [document.getElementById('qt_container')],
+                containerElements : [container],
+                stdoutEnabled : false,
+//                restartMode : "RestartOnExit",
                 statusChanged: function(status) {
                     console.log("status changed " + status);
-
-                    // Reload on crash (once)
-                    if (status == "Exited" && qtLoader.crashed && !didReload) {
-                        didReload = true;
-
-                        // Reload once exit and error processing has completed.
-                        window.setTimeout(function() {
-                            qtLoader.loadEmscriptenModule({{{ MODULE_NAME }}});
-                        }, 0);
-                    }
                 }
             });
 

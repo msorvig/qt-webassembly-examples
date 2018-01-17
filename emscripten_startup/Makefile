@@ -21,6 +21,7 @@ minimal_js:
 qtloader_shell:
 	# minimal qtloader.js user build
 	sed 's/{{{ MODULE_NAME }}}/Minimal/g' qtloader_user.html > OUT/qtloader_user_tmp.html
+	cp qtloader.js OUT/
 	emcc main.cpp -o OUT/qtloader_user.html --shell-file OUT/qtloader_user_tmp.html -std=c++11 -s WASM=1 -s MODULARIZE=1 -s EXPORT_NAME=\"'Minimal'\"
 	rm OUT/qtloader_user_tmp.html
 

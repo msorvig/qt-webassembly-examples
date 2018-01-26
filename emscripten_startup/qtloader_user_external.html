@@ -1,0 +1,61 @@
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <style>
+    #loader, #canvas {
+        width: 320px;
+        height: 200px;
+    }
+    </style>
+</head>
+<body onload="init()">
+    <div>
+        Minimal emscripten html using qtloader.js
+    </div>
+    <div id="status">
+        <h3>Loading Qt</h3>
+    </div>
+    <canvas id="canvas"> </canvas>
+    <script>
+        function init() {
+            console.log("init: creating QtLoader")
+            var status = document.getElementById('status');
+            var canvas = document.getElementById('canvas');
+            canvas.style.display = "none";
+
+            console.log(status.style.display)
+            
+            var qtLoader = QtLoader({
+                showLoader: function() {
+                    console.log("showLoader");
+                    status.style.display = "block";
+                    canvas.style.display = "none";
+                },
+                showError: function(errorText) {
+                    console.log("showError " + errorText);
+                    status.style.display = "block";
+                    canvas.style.display = "none";
+                },
+                showCanvas: function() {
+                    console.log("showCanvas");
+                    status.style.display = "none";
+                    canvas.style.display = "block";
+                    return canvas;
+                },
+                showExit: function(crashed, exitCode) {
+                    console.log("showExit " + crashed + " " + exitCode);
+                    if (crashed) {
+                        status.style.display = "block";
+                        canvas.style.display = "none";
+                    }
+                    // Leave canvas content on clean exit
+                }
+            });
+
+            qtLoader.loadEmscriptenModule({{{ MODULE_NAME }}});
+        }
+    </script>
+    <script async type="text/javascript" src="../qtloader.js"></script>
+    {{{ SCRIPT }}}
+</body>
+</html>

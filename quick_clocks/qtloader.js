@@ -84,11 +84,13 @@
 //      Prefix path for wasm file, realative to the loading HMTL file.
 //  restartMode : "DoNotRestart", "RestartOnExit", "RestartOnCrash"
 //      Controls whether the application should be reloaded on exits. The default is "DoNotRestart"
+//  restartType : "RestartModule", "ReloadPage"
 //  restartLimit : <int>
 //     Restart attempts limit. The default is 10.
 //  stdoutEnabled : <bool>
 //  stderrEnabled : <bool>
-//
+//  environment : <object>
+//     key-value environment variable pairs.
 //
 // QtLoader object API
 //
@@ -256,11 +258,14 @@ function QtLoader(config)
         // as well. Note that emscripten may also throw exceptions from
         // async callbacks. These should be handled in window.onerror by user code.
         module.onAbort = module.onAbort || function(text) {
+            console.log("abort " + text);
+
             publicAPI.crashed = true;
             setStatus("Exited");
         }
         module.quit = module.quit || function(code, exception) {
-            if (exception.name == "RangeError") {
+            console.log("quit " + code + " " + exception + " " + exception.name);
+            if (exception.name !== undefined) {
                 // Emscripten calls module.quit with RangeError on stack owerflow
                 publicAPI.crashed = true;
             } else {
@@ -270,8 +275,23 @@ function QtLoader(config)
 
             setStatus("Exited");
         }
-
+        
+        // Set environment variables
+        Module.preRun.push(function() {
+            for (let [key, value] of Object.entries(config.environment)) {
+                ENV[key.toUpperCase()] = value;
+            }                   
+        });
+        
         config.restart = function() {
+
+            // Restart by reloading the page. This will wipe all state which means
+            // reload loops can't be prevented.
+            if (config.restartType == "ReloadPage") {
+                location.reload();
+            }
+
+            // Restart by readling the emscripten app module.
             ++self.restartCount;
             if (self.restartCount > config.restartLimit) {
                 self.error = "Error: This application has crashed too many times and has been disabled. Reload the page to try again."
@@ -285,7 +305,7 @@ function QtLoader(config)
         publicAPI.crashed = false;
         setStatus("Loading");
 
-        // Finall call emscripten create with our config object
+        // Finally call emscripten create with our config object
         createModule(module);
     }
 
@@ -357,13 +377,18 @@ function QtLoader(config)
 
     var committedStatus = undefined;
     function handleExitedStatusChange() {
+        console.log("handleExitedStatusChange pre")
+
         if (committedStatus == publicAPI.status)
             return;
         committedStatus = publicAPI.status;
+        console.log("handleExitedStatusChange")
 
         if (publicAPI.status == "Exited") {
             if (config.restartMode == "RestartOnExit" ||
                 config.restartMode == "RestartOnCrash" && publicAPI.crashed) {
+                    console.log("restart()")
+                    committedStatus = undefined;
                     config.restart();
             } else {
                 setExitContent();
@@ -375,6 +400,8 @@ function QtLoader(config)
         if (publicAPI.status == status)
             return;
         publicAPI.status = status;
+        
+        console.log("status: " + status + ((status === "Exited" && publicAPI.crashed) ? " (crash)" : ""))
 
         if (publicAPI.status == "Error") {
             setErrorContent();

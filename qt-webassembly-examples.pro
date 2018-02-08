@@ -3,6 +3,7 @@ TEMPLATE = subdirs
 SUBDIRS = \
     gui_opengl \
     gui_raster \
+    gui_lifecycle \
     widgets_wiggly \
     quick_clocks \
 

@@ -1,0 +1,110 @@
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <style>
+    #qt_container {
+        width: 320px;
+        height: 300px;
+
+        /* Center Qt Placeholder content */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    </style>
+</head>
+<body onload="init()">
+    <div>
+        Qt Application Lifecyle Tester
+    </div>
+    <div id="qt_status">
+        Status:
+    </div>
+    <form name = "restartModeForm">
+        Auto Restart Mode:
+        <input type="radio" id="DoNotRestart" name="restartMode" value="DoNotRestart" onclick="restartModeChange(this);" checked>
+        <label for="DoNotRestart">No Thanks</label>
+        <input type="radio" id="OnExit" name="restartMode" value="RestartOnExit" onclick="restartModeChange(this);">
+        <label for="OnExit">On Exit</label>
+        <input type="radio" id="OnCrash" name="restartMode" value="RestartOnCrash" onclick="restartModeChange(this);">
+        <label for="OnCrash">On Crash</label>
+    </form>
+    <form name = "restartTypeForm">
+        Auto Restart Type:
+        <input type="radio" id="RestartModule" name="restartType" value="RestartModule" onclick="restartTypeChange(this);" checked>
+        <label for="RestartModule">Restart Module (app)</label>
+        <input type="radio" id="ReloadPage" name="restartType" value="ReloadPage" onclick="restartTypeChange(this);">
+        <label for="ReloadPage">Reload Page</label>
+    </form>
+    <div>
+        <button type="button" onclick="restart();">Load/Restart App</button>
+    </div>    
+    <div id="qt_container">
+        <noscript>
+            <h3>JavaScript is disabled. Please enable JavaScript to use Qt for WebAssembly.</h3>
+        </noscript>
+    </div>
+    <script>
+        var qtLoader = undefined;
+        var restartMode = "DoNotRestart";
+        var restartType = "RestartModule";
+        
+        function restartModeChange(radio) {
+            console.log(radio.value);
+            restartMode = radio.value;
+            createLoader();
+        }
+
+        function restartTypeChange(radio) {
+            console.log(radio.value);
+            restartType = radio.value;
+            createLoader();
+        }
+
+        function handleStatusChange(status) {
+            var statusElement = document.getElementById('qt_status');
+            var statusText = "Status: " + status;
+            if (status == "Created") {
+                statusText += "; WebAssembly Support: "  + qtLoader.webAssemblySupported;
+                statusText += "; WebGL Support: " + qtLoader.webGLSupported;
+                statusText += "; Can Load: " + qtLoader.canLoadApplication;
+            } else if (status == "Exited") {
+                if (qtLoader.crashed)
+                    statusText += "; (crash)"
+                else
+                    statusText += "; Code: " + qtLoader.exitCode;
+                if (qtLoader.exitText !== undefined)
+                    statusText += "; Message: " + qtLoader.exitText;
+            }
+            statusElement.innerHTML = statusText;
+        }
+        
+        function restart() {
+            qtLoader.loadEmscriptenModule(Module);
+        }
+        
+        function createLoader() {
+            console.log(restartMode);
+            console.log(restartType);
+
+            var containerElement = document.getElementById('qt_container');
+            qtLoader = QtLoader({
+                containerElements: [containerElement],
+                restartMode: self.restartMode,
+                restartType: self.restartType,
+                statusChanged: handleStatusChange
+            });
+        }
+        
+        function init() {
+            // Revert to defualt button checked on page refresh
+            restartModeForm.reset();
+            restartTypeForm.reset();
+        
+            createLoader();
+        }
+    </script>
+    <script async type="text/javascript" src="qtloader.js"></script>
+    <script async type="text/javascript" src="gui_lifecycle.js"></script>
+</body>
+</html>

@@ -164,8 +164,6 @@ function QtLoader(config)
         }
 
         config.showExit = config.showExit || function(crashed, exitCode, container) {
-            console.log("show exit");
-
             if (!crashed)
                 return undefined;
 
@@ -262,14 +260,11 @@ function QtLoader(config)
         // as well. Note that emscripten may also throw exceptions from
         // async callbacks. These should be handled in window.onerror by user code.
         module.onAbort = module.onAbort || function(text) {
-            console.log("abort " + text);
-
             publicAPI.crashed = true;
             publicAPI.exitText = text;
             setStatus("Exited");
         }
         module.quit = module.quit || function(code, exception) {
-            console.log("quit " + code + " " + exception + " " + exception.name);
             if (exception.name == "ExitStatus") {
                 // Clean exit with code
                 publicAPI.exitCode = code;
@@ -279,15 +274,15 @@ function QtLoader(config)
             }
             setStatus("Exited");
         }
-        
+
         // Set environment variables
         Module.preRun = Module.preRun || []
         Module.preRun.push(function() {
             for (let [key, value] of Object.entries(config.environment)) {
                 ENV[key.toUpperCase()] = value;
-            }                   
+            }
         });
-        
+
         config.restart = function() {
 
             // Restart by reloading the page. This will wipe all state which means
@@ -370,14 +365,11 @@ function QtLoader(config)
                 config.showExit(publicAPI.crashed, publicAPI.exitCode);
             return;
         }
-        
-        console.log("setExitContent "  + publicAPI.crashed)
 
         if (!publicAPI.crashed)
             return;
 
         for (container of config.containerElements) {
-            console.log("call show exit");
             var loaderElement = config.showExit(publicAPI.crashed, publicAPI.exitCode, container);
             if (loaderElement !== undefined)
                 container.appendChild(loaderElement);
@@ -386,13 +378,10 @@ function QtLoader(config)
 
     var committedStatus = undefined;
     function handleStatusChange() {
-        console.log("handleStatusChange pre")
-
         if (committedStatus == publicAPI.status)
             return;
         committedStatus = publicAPI.status;
 
-        console.log("handleStatusChange")
         if (publicAPI.status == "Error") {
             setErrorContent();
         } else if (publicAPI.status == "Loading") {
@@ -400,8 +389,6 @@ function QtLoader(config)
         } else if (publicAPI.status == "Running") {
             setCanvasContent();
         } else if (publicAPI.status == "Exited") {
-            console.log("handle exit");
-            console.log(config.restartMode);
             if (config.restartMode == "RestartOnExit" ||
                 config.restartMode == "RestartOnCrash" && publicAPI.crashed) {
                     committedStatus = undefined;
@@ -412,7 +399,6 @@ function QtLoader(config)
         }
 
         // Send status change notification
-        console.log(config.statusChanged)
         if (config.statusChanged)
             config.statusChanged(publicAPI.status);
     }
@@ -421,13 +407,8 @@ function QtLoader(config)
         if (publicAPI.status == status)
             return;
         publicAPI.status = status;
-        
-        console.log("status: " + status + ((status === "Exited" && publicAPI.crashed) ? " (crash)" : ""))
 
-        // There may be multiple calls setStatus("Exited") on exit. Delay handling
-        // in order to prevent e.g. transitioning to "loading" in between two calls.
         window.setTimeout(function() { handleStatusChange(); }, 0);
-
     }
 
     setStatus("Created");

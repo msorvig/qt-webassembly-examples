@@ -6,9 +6,11 @@ SUBDIRS = \
     gui_lifecycle \
     widgets_wiggly \
     quick_clocks \
+    quick_controls2_gallery \
+    quick_controls2_testbench \
 
 
 # Add Sensortag if its submodule has been synced
 exists($$PWD/SensorTagDemo/SensorTagDemo.pro) {
-    SUBDIRS += SensorTagDemo
+#    SUBDIRS += SensorTagDemo
 }

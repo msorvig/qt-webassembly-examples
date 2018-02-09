@@ -2,6 +2,7 @@
 
 RasterWindow::RasterWindow()
 :m_eventCount(0)
+,m_timeoutCount(0)
 ,m_pressed(false)
 {
     qDebug() << "RasterWindow()";
@@ -10,6 +11,13 @@ RasterWindow::RasterWindow()
     QSurfaceFormat format;
     format.setAlphaBufferSize(0);
     setFormat(format);
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, [this](){
+        ++m_timeoutCount;
+        update();
+    });
+    timer->start(1000);
 }
 
 void RasterWindow::paintEvent(QPaintEvent * event)
@@ -37,7 +45,8 @@ void RasterWindow::paintEvent(QPaintEvent * event)
     text += QString("Window Geometry: %1 %2 %3 %4\n").arg(g.x()).arg(g.y()).arg(g.width()).arg(g.height());
     text += QString("Window devicePixelRatio: %1\n").arg(devicePixelRatio());
     text += QString("Screen Geometry: %1 %2 %3 %4\n").arg(sg.x()).arg(sg.y()).arg(sg.width()).arg(sg.height());
-    text += QString("Received Event Count: %1\n").arg(m_eventCount);
+    text += QString("Received Events: %1\n").arg(m_eventCount);
+    text += QString("Received Timers: %1\n").arg(m_timeoutCount);
 
     p.drawText(QRectF(0, 0, width(), height()), Qt::AlignCenter, text);
 }

@@ -70,6 +70,7 @@ public:
 private:
     void incrementEventCount();
     int m_eventCount;
+    int m_timeoutCount;
     QPoint m_offset;
     QPoint m_lastPos;
     bool m_pressed;

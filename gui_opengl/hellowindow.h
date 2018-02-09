@@ -38,35 +38,27 @@
 **
 ****************************************************************************/
 
-#include <QWindow>
-
+#include <QOpenGLWindow>
 #include <QColor>
-#include <QMutex>
 #include <QOpenGLShaderProgram>
-#include <QSharedPointer>
-#include <QTimer>
 
-class HelloWindow;
-
-class Renderer : public QObject
+class HelloWindow : public QOpenGLWindow
 {
-    Q_OBJECT
-
 public:
-    explicit Renderer(const QSurfaceFormat &format, Renderer *share = 0, QScreen *screen = 0);
+    HelloWindow();
 
-    QSurfaceFormat format() const { return m_format; }
+private:    
+    void updateColor();
 
-    void setAnimating(HelloWindow *window, bool animating);
+    void initializeGL() override;
+    void resizeGL(int w, int h) override;
+    void paintGL() override;
 
-private slots:
-    void render();
+    void mousePressEvent(QMouseEvent *) override;
+    
+    int m_colorIndex;
+    QColor m_color;
 
-private:
-    void initialize();
-
-    qreal m_fAngle;
-    bool m_showBubbles;
     void paintQtLogo();
     void createGeometry();
     void createBubbles(int number);
@@ -74,37 +66,13 @@ private:
     void extrude(qreal x1, qreal y1, qreal x2, qreal y2);
     QVector<QVector3D> vertices;
     QVector<QVector3D> normals;
+    qreal m_fAngle;
     int vertexAttr;
     int normalAttr;
     int matrixUniform;
     int colorUniform;
 
-    bool m_initialized;
     QSurfaceFormat m_format;
     QOpenGLContext *m_context;
     QOpenGLShaderProgram *m_program;
-
-    QList<HelloWindow *> m_windows;
-    int m_currentWindow;
-
-    QMutex m_windowLock;
-};
-
-class HelloWindow : public QWindow
-{
-public:
-    explicit HelloWindow(const QSharedPointer<Renderer> &renderer);
-
-    QColor color() const;
-    void updateColor();
-
-    void exposeEvent(QExposeEvent *event);
-
-private:
-    void mousePressEvent(QMouseEvent *);
-
-    int m_colorIndex;
-    QColor m_color;
-    const QSharedPointer<Renderer> m_renderer;
-    mutable QMutex m_colorLock;
 };

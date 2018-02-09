@@ -47,12 +47,7 @@ int main(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
     
-    QSurfaceFormat format;
-    format.setDepthBufferSize(16);
-
-    QSharedPointer<Renderer> renderer(new Renderer(format));
-    
-    HelloWindow window(renderer);
+    HelloWindow window;
     window.showFullScreen();
     
     return app.exec();

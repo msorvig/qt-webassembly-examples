@@ -1,7 +1,10 @@
 #include <QtGui>
 
 #include <functional>
+
+#ifdef Q_OS_HTML5
 #include <emscripten.h>
+#endif
 
 // QMUI: Qt Minimal UI
 
@@ -117,15 +120,19 @@ int main(int argc, char **argv)
     
     QMUIWindow window;
 
+#ifdef Q_OS_HTML5
     window.addButton("exit(0)", [](){
         emscripten_force_exit(0);
     });
+
     window.addButton("exit(1)", [](){
         emscripten_force_exit(1);
     });
+
     window.addButton("Module.abort()", [](){
         EM_ASM(Module.abort("Abort button pressed"););
     });
+#endif
 
     window.addButton("Stack Overflow", [](){
         stackOverflow();

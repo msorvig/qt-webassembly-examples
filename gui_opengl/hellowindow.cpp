@@ -47,6 +47,7 @@
 HelloWindow::HelloWindow()
     : QOpenGLWindow(QOpenGLWindow::NoPartialUpdate)
     , m_colorIndex(0)
+    , m_animating(true)
 {
     
     QSurfaceFormat format;
@@ -61,6 +62,15 @@ HelloWindow::HelloWindow()
 void HelloWindow::mousePressEvent(QMouseEvent *)
 {
     updateColor();
+}
+
+void HelloWindow::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_Space) {
+        m_animating = !m_animating;
+        if (m_animating)
+            requestUpdate();
+    }
 }
 
 void HelloWindow::updateColor()
@@ -152,7 +162,8 @@ void HelloWindow::paintGL()
     
     // qDebug() << "HelloWindow::render 3 start timer";
 
-    requestUpdate();
+    if (m_animating)
+        requestUpdate();
 }
 
 void HelloWindow::paintQtLogo()

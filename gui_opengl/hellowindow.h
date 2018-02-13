@@ -55,9 +55,11 @@ private:
     void paintGL() override;
 
     void mousePressEvent(QMouseEvent *) override;
+    void keyPressEvent(QKeyEvent* event) override;
     
     int m_colorIndex;
     QColor m_color;
+    bool m_animating;
 
     void paintQtLogo();
     void createGeometry();

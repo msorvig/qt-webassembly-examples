@@ -68,6 +68,15 @@ WigglyWidget::WigglyWidget(QWidget *parent)
 }
 //! [0]
 
+void WigglyWidget::mousePressEvent(QMouseEvent *)
+{
+    if (timer.isActive()) {
+        timer.stop();
+    } else {
+        timer.start(60, this);
+    }
+}
+
 //! [1]
 void WigglyWidget::paintEvent(QPaintEvent * /* event */)
 //! [1] //! [2]

@@ -66,6 +66,7 @@ public slots:
     void setText(const QString &newText) { text = newText; }
 
 protected:
+    void mousePressEvent(QMouseEvent *ev) override;
     void paintEvent(QPaintEvent *event) override;
     void timerEvent(QTimerEvent *event) override;
 

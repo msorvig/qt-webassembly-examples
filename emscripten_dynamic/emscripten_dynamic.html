@@ -1,0 +1,66 @@
+<html>
+<head>
+    <meta charset="utf-8"/>
+</head>
+<body onload="init()">
+    <div>
+        Emscripten Shared Builds (check console output)
+    </div>
+    <script>
+        
+        async function fetchFile(fileUrl) {
+            var response = await fetch(new Request(fileUrl));
+            if (!response.ok)
+                throw Error("Could not fetch wasm file at " + fileUrl);
+            return response.arrayBuffer();
+        }
+        
+        async function preloadFileToMemFS(module, filePath) {
+            // ### assume filePath is a file name and store on
+            // MEMFS file system root:
+            //   foo.wasm -> /foo.wasm
+            // This means e.g. dlopen("foo.wasm") finds the file
+            // TODO: path/to/foo.wasm -> /path/to/foo.wasm
+            const buffer = await fetchFile(filePath);
+            const fileStorePath = "/" + filePath;
+            module.FS.writeFile(filePath, new Uint8Array(buffer));
+        }
+        
+        async function preloadFilesToMemFs(module, files) {
+            for (const file of files) {
+                preloadFileToMemFS(module, file)
+            }
+        }
+        
+        async function init() {
+            console.log("Hello World from javascript init()");
+
+            // fetch the main module wasm;
+            var mainModuleWasm = await fetchFile("dynamicmain.wasm");
+
+            // specify side modules; emscripten will fetch and link these
+            var dynamicLibraries = ["lib_a.wasm"];
+            
+            // specify modules-to-be-dlopened: will be stored to the memfs file system
+            var dlopenLibraries = ["lib_b.wasm"];
+
+            var config = {
+                wasmBinary : mainModuleWasm,
+                dynamicLibraries : dynamicLibraries,
+                preInit : function() {
+                     // At pre-init time the config object (which is actaully the module object)
+                     // will have been populated with the file system object (FS).
+                    preloadFilesToMemFs(config, dlopenLibraries).then(() =>  {
+                        console.log("Done storing dlopenLibraries to the file system")
+                        // TODO: sync up with main module loading
+                    });
+                 }
+            }
+
+            // ### wait until all wasm files has loaded.
+            var module = Module(config);
+        }
+    </script>
+    <script async type="text/javascript" src="dynamicmain.js"></script>
+</body>
+</html>

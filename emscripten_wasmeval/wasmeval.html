@@ -1,0 +1,53 @@
+<html>
+<head>
+    <meta charset="utf-8"/>
+</head>
+<body onload="init()">
+    <div>
+        Wasm Eval (check console output)
+    </div>
+    <script>
+        async function init() {
+            console.log("Hello World from javascript init()");
+
+            // helper that copies a null-terminated C string to a javascript string, 
+            // like emscripten Pointer_stringify
+            function stringify(buffer, begin) {
+                let bytes = new Uint8Array(buffer)
+                let end = begin;
+                while (bytes[end] != 0)
+                    ++end;
+                return String.fromCharCode.apply(String, bytes.subarray(begin, end));
+            }
+
+            // Create basic wams/emscripten import object with attached memory
+            let imports = {
+                env: {
+                    'memoryBase' : 0,
+                    'memory': new WebAssembly.Memory({initial: 256}),
+                },
+            };
+
+            // Create and attach eval function to the import object
+            let eval = function(codeOffset) {
+                let buffer = imports['env']['memory'].buffer
+                let code = stringify(buffer, codeOffset);
+                return this.eval(code);
+            }
+            imports['env']['_js_eval'] = eval;
+            imports['env']['_js_eval_int'] = eval;
+            imports['env']['_js_eval_double'] = eval;
+
+            // Fetch, compile and instantiate program
+            let response = await fetch("main.wasm");
+            let wasm = await response.arrayBuffer();
+            let module = await WebAssembly.compile(wasm);
+            let instance = await WebAssembly.instantiate(module, imports)
+
+            // Call functions
+            instance.exports.__post_instantiate();
+            console.log(instance.exports._fortytwo())
+        }
+    </script>
+</body>
+</html>

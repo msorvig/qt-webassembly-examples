@@ -14,7 +14,7 @@ print("Source:      {0}".format(source))
 print("Destination: {0}".format(dest))
 
 # process each source dir
-dirs = [f for f in os.listdir(source) if os.path.isdir(os.path.join(source, f))]
+dirs = sorted(list([f for f in os.listdir(source) if os.path.isdir(os.path.join(source, f))]))
 for dir in dirs:
     sourcepath = os.path.join(source, dir)
     destpath = os.path.join(dest, dir)

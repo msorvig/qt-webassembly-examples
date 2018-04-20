@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>
+  Local File Access Testing
+  </title>
+  
+  <script>
+      function init() {
+          console.log("init");
+          
+          // A file type input
+          fileElem = document.getElementById("fileElem");
+          
+          // We're using the canvases as buttons, which matches how
+          // Qt will trigger file loads
+          let loadCanvas = document.getElementById("load")
+          let context = loadCanvas.getContext("2d");
+          context.fillText("Click to Load", 10, 30);
+
+          // Trigger the file element on click to show the native file selector
+          loadCanvas.addEventListener('click', function() { 
+              console.log("load")
+              fileElem.click();
+          }, false);
+          
+          // Now the save canvas
+          let saveCanvas = document.getElementById("save")
+          context = saveCanvas.getContext("2d");
+          context.fillText("Click to Save", 10, 30);
+
+          // Trigger file download on save
+          saveCanvas.addEventListener('click', function() { 
+              console.log("save")
+              let filename = "testfile38973897.foofile"
+              let filecontents =  new Uint8Array([1, 2, 3, 4]);
+              let fileblob = new Blob([filecontents.buffer], { type : "application/octet-stream" } );
+              let link = document.createElement("a");
+              link.download = filename;
+              link.innerHtml = "N/A";
+              link.href = window.URL.createObjectURL(fileblob);
+              link.style = "display:none";
+              link.click();
+          }, false);
+      }
+      
+      function handleFiles(files) {
+          console.log("handleFiles")
+          console.log(files);
+          
+          // Read files (async)
+
+          for (var i = 0; i < files.length; i++) {
+              var reader = new FileReader();
+              reader.addEventListener("load", function () {
+                  console.log("load");
+                  let arrayBuffer = reader.result;
+                  console.log(arrayBuffer)
+                  
+              });
+              reader.readAsArrayBuffer(files[i]);
+          }
+      }
+
+  </script>
+
+</head>
+<body onload=init();>
+    Local File Read Write Testing
+    <div>
+    <canvas id="load"> </canvas>
+    <canvas id="save"> </canvas>
+    </div>
+    
+    <input type="file" id="fileElem" multiple accept="*" style="display:none" onchange="handleFiles(this.files)">
+</body>
+</html>

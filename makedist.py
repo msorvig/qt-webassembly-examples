@@ -23,8 +23,9 @@ for dir in dirs:
     files = [os.path.join(dp, f) for dp, dn, fn in os.walk(sourcepath) for f in fn]
     
     # skip some intermediate build artifacts
-    def skipFile(name):
-        return name.endswith(".cpp") or name.endswith(".h") or name.endswith(".o") or name == "Makefile"
+    def skipFile(path):
+        return path.endswith(".cpp") or path.endswith(".h") or path.endswith(".o") or path.endswith("Makefile") \
+               or path.endswith(".moc") or path.endswith(".stash") or path.endswith(".cache") or path.endswith(".qrc")
     prunedFiles = list(filter(lambda x: not skipFile(x), files))
 
     # copy all files

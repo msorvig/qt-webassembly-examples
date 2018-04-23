@@ -20,7 +20,7 @@ for dir in dirs:
     destpath = os.path.join(dest, dir)
     
     # find all files
-    files = [f for f in os.listdir(sourcepath) if os.path.isfile(os.path.join(sourcepath, f))]
+    files = [os.path.join(dp, f) for dp, dn, fn in os.walk(sourcepath) for f in fn]
     
     # skip some intermediate build artifacts
     def skipFile(name):

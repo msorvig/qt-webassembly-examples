@@ -72,10 +72,10 @@
 //  showLoader : function(status, containerElement)
 //      Optional loading element constructor function. Implement to create
 //      a custom loading screen. This function may be called multiple times,
-//      while preparing the application binary. "status" is a string 
+//      while preparing the application binary. "status" is a string
 //      containing the loading sub-status, and may be either "Downloading",
 //      or "Compiling". The browser may be using streaming compilation, in
-//      which case the wasm module is compiled during downloading and the 
+//      which case the wasm module is compiled during downloading and the
 //      there is no separate compile step.
 //  showCanvas : function(containerElement)
 //      Optional canvas constructor function. Implement to create custom
@@ -122,7 +122,12 @@ var Module = {}
 function QtLoader(config)
 {
     function webAssemblySupported() {
-        return typeof WebAssembly !== undefined
+        console.log("webAssemblySupported");
+        console.log(typeof WebAssembly)
+        console.log(typeof WebAssembly == "undefined")
+        console.log(typeof WebAssembly === "undefined")
+        
+        return typeof WebAssembly !== "undefined"
     }
 
     function webGLSupported() {
@@ -265,6 +270,9 @@ function QtLoader(config)
         // 3) Configure the emscripten Module object
         // 4) Start the emcripten runtime, after which emscripten takes over
 
+        console.log("loadEmscriptenModule 1");
+        console.log(webAssemblySupported())
+
         // Check for Wasm & WebGL support; set error and return before downloading resources if missing
         if (!webAssemblySupported()) {
             self.error = "Error: WebAssembly is not supported"
@@ -276,6 +284,8 @@ function QtLoader(config)
             setStatus("Error");
             return;
         }
+        
+        console.log("loadEmscriptenModule 2");
 
         // Continue waiting if loadEmscriptenModule() is called again
         if (publicAPI.status == "Loading")

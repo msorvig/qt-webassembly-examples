@@ -122,11 +122,6 @@ var Module = {}
 function QtLoader(config)
 {
     function webAssemblySupported() {
-        console.log("webAssemblySupported");
-        console.log(typeof WebAssembly)
-        console.log(typeof WebAssembly == "undefined")
-        console.log(typeof WebAssembly === "undefined")
-        
         return typeof WebAssembly !== "undefined"
     }
 
@@ -270,9 +265,6 @@ function QtLoader(config)
         // 3) Configure the emscripten Module object
         // 4) Start the emcripten runtime, after which emscripten takes over
 
-        console.log("loadEmscriptenModule 1");
-        console.log(webAssemblySupported())
-
         // Check for Wasm & WebGL support; set error and return before downloading resources if missing
         if (!webAssemblySupported()) {
             self.error = "Error: WebAssembly is not supported"
@@ -284,8 +276,6 @@ function QtLoader(config)
             setStatus("Error");
             return;
         }
-        
-        console.log("loadEmscriptenModule 2");
 
         // Continue waiting if loadEmscriptenModule() is called again
         if (publicAPI.status == "Loading")

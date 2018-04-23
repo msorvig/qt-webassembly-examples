@@ -72,10 +72,10 @@
 //  showLoader : function(status, containerElement)
 //      Optional loading element constructor function. Implement to create
 //      a custom loading screen. This function may be called multiple times,
-//      while preparing the application binary. "status" is a string 
+//      while preparing the application binary. "status" is a string
 //      containing the loading sub-status, and may be either "Downloading",
 //      or "Compiling". The browser may be using streaming compilation, in
-//      which case the wasm module is compiled during downloading and the 
+//      which case the wasm module is compiled during downloading and the
 //      there is no separate compile step.
 //  showCanvas : function(containerElement)
 //      Optional canvas constructor function. Implement to create custom
@@ -122,7 +122,7 @@ var Module = {}
 function QtLoader(config)
 {
     function webAssemblySupported() {
-        return typeof WebAssembly !== undefined
+        return typeof WebAssembly !== "undefined"
     }
 
     function webGLSupported() {

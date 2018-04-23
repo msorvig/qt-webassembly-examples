@@ -14,3 +14,8 @@ SUBDIRS = \
 exists($$PWD/SensorTagDemo/SensorTagDemo.pro) {
 #    SUBDIRS += SensorTagDemo
 }
+
+# Add Slate if its submodule has been synced
+exists($$PWD/slate/slate.pro) {
+    SUBDIRS += slate
+}

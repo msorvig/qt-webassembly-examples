@@ -1,3 +1,6 @@
 [submodule "SensorTagDemo"]
 	path = SensorTagDemo
 	url = https://github.com/lpotter/iot-sensortag.git
+[submodule "slate"]
+	path = slate
+	url = git@github.com:msorvig/slate.git

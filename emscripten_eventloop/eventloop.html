@@ -1,0 +1,38 @@
+<html>
+<head>
+    <meta charset="utf-8"/>
+</head>
+<body onload="init()">
+    <div>
+        Wasm event loop (check console output)
+    </div>
+    <button onclick="updateTiming()">Update Event Loop Timing</button>
+    <input id="timer" type="number" value=500></input>
+    <label for="timer">timeout (ms)</label>
+    <input id="raf" type="checkbox">
+    <label for="raf">update with requestAnimationFrame</label>
+    <script>
+        update_loop_timing1 = undefined
+        update_loop_timing2 = undefined
+        
+        async function init() {
+            console.log("JS: Hello World from init()");
+            update_loop_timing1 = Module.cwrap('update_loop_timing1', null, ['number', 'number'])
+            update_loop_timing2 = Module.cwrap('update_loop_timing2', null, ['number', 'number'])
+        }
+        
+        function $(id) {
+            return document.getElementById(id);
+        }
+
+
+        function updateTiming() {
+            let timeout = $("timer").value;
+            let useRaf = $("raf").checked ? 1 : 0;
+            console.log("JS: update timing " + timeout + " " + useRaf);
+            update_loop_timing2(timeout, useRaf)
+        }
+    </script>
+    <script src="main.js"></script> 
+</body>
+</html>

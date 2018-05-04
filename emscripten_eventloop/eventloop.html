@@ -12,8 +12,8 @@
     <input id="raf" type="checkbox">
     <label for="raf">update with requestAnimationFrame</label>
     <script>
-        update_loop_timing1 = undefined
-        update_loop_timing2 = undefined
+        update_loop_timing1 = undefined;
+        update_loop_timing2 = undefined;
         
         async function init() {
             console.log("JS: Hello World from init()");
@@ -24,7 +24,6 @@
         function $(id) {
             return document.getElementById(id);
         }
-
 
         function updateTiming() {
             let timeout = $("timer").value;

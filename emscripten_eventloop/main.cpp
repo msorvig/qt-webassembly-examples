@@ -12,14 +12,12 @@ void start_main_loop()
     int fps = 2;
     void *context = nullptr;
     emscripten_set_main_loop_arg(main_func, context, fps, infinite_loop);
-    
-    // begin in paused state
-    emscripten_pause_main_loop();
 }
 
 void main_func(void *context)
 {
     puts("C++: main_func main loop callback");
+    emscripten_set_main_loop_timing(EM_TIMING_RAF, 1);
 }
 
 // set timing and raf usage with emscripten_set_main_loop_timing

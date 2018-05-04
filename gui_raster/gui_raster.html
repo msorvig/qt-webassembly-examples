@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Qt for WebAssembly</title>
+    <title>gui_raster</title>
     <style>
       html, body { padding: 0; margin : 0; overflow:hidden; height: 100% }
       /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
@@ -14,7 +14,7 @@
     <figure style="overflow:visible;" id="spinner">
       <center style="margin-top:1.5em; line-height:150%">
         <img src="qtlogo.svg"; width=320; height=200; style="display:block"> </img>
-        <strong>Qt for WebAssembly</strong>
+        <strong>Qt for WebAssembly: gui_raster</strong>
         <div id="status"></div>
         <noscript>JavaScript is disabled. Please enable JavaScript to use this application.</noscript>
       </center>
@@ -39,7 +39,11 @@
                   canvas.style.display = 'none';
               },
               showExit: function() {
-                  status.innerHTML = "Application exit with code: " + qtLoader.exitCode + " " + qtLoader.exitText;
+                  status.innerHTML = "Application exit";
+                  if (qtLoader.exitCode !== undefined)
+                      status.innerHTML += " with code " + qtLoader.exitCode;
+                  if (qtLoader.exitText !== undefined)
+                      status.innerHTML += " (" + qtLoader.exitText + ")";
                   spinner.style.display = 'block';
                   canvas.style.display = 'none';
               },

@@ -244,6 +244,8 @@ function QtLoader(config)
     function fetchCompileWasm(filePath) {
         return fetchResource(filePath).then(function(response) {
             if (typeof WebAssembly.compileStreaming !== "undefined") {
+                self.loaderSubState = "Downloading/Compiling";
+                setStatus("Loading");
                 return WebAssembly.compileStreaming(response).catch(function(error) {
                     // compileStreaming may/will fail if the server does not set the correct
                     // mime type (application/wasm) for the wasm file. Fall back to fetch,
@@ -363,7 +365,8 @@ function QtLoader(config)
         Module.quit = Module.quit || function(code, exception) {
             if (exception.name == "ExitStatus") {
                 // Clean exit with code
-                publicAPI.exitCode = code;
+                publicAPI.exitText = "ulladulla undefined"
+                publicAPI.exitCode = undefined;
             } else {
                 publicAPI.exitText = exception.toString();
                 publicAPI.crashed = true;
@@ -398,7 +401,7 @@ function QtLoader(config)
 
         }
         publicAPI.exitCode = undefined;
-        publicAPI.exitText = "";
+        publicAPI.exitText = undefined;
         publicAPI.crashed = false;
 
         // Finally evaluate the emscripten application script, which will

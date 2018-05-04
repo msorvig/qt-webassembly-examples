@@ -5,6 +5,7 @@ SUBDIRS = \
     gui_raster \
     gui_lifecycle \
     widgets_wiggly \
+    quick_hellosquare \
     quick_clocks \
     quick_controls2_gallery \
     quick_controls2_testbench \

@@ -4,6 +4,7 @@ SUBDIRS = \
     gui_opengl \
     gui_raster \
     gui_lifecycle \
+    gui_localfiles \
     widgets_wiggly \
     quick_hellosquare \
     quick_clocks \

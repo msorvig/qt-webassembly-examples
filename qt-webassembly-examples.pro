@@ -11,6 +11,7 @@ SUBDIRS = \
     quick_controls2_gallery \
     quick_controls2_testbench \
 
+qtHaveModule(mqtt):qtHaveModule(websockets): SUBDIRS += mqtt_simpleclient
 
 # Add Sensortag if its submodule has been synced
 exists($$PWD/SensorTagDemo/SensorTagDemo.pro) {

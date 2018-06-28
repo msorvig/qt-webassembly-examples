@@ -14,10 +14,17 @@ SUBDIRS = \
 
 # Add Sensortag if its submodule has been synced
 exists($$PWD/SensorTagDemo/SensorTagDemo.pro) {
-#    SUBDIRS += SensorTagDemo
+    SUBDIRS += SensorTagDemo
 }
 
 # Add Slate if its submodule has been synced
 exists($$PWD/slate/slate.pro) {
     SUBDIRS += slate
 }
+
+
+# Add Colordebugger if its submodule has been synced
+exists($$PWD/Colordebugger/colordebugger.pro) {
+#    SUBDIRS += SensorTagDemo
+}
+

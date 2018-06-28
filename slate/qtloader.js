@@ -365,8 +365,8 @@ function QtLoader(config)
         Module.quit = Module.quit || function(code, exception) {
             if (exception.name == "ExitStatus") {
                 // Clean exit with code
-                publicAPI.exitText = "ulladulla undefined"
-                publicAPI.exitCode = undefined;
+                publicAPI.exitText = undefined
+                publicAPI.exitCode = code;
             } else {
                 publicAPI.exitText = exception.toString();
                 publicAPI.crashed = true;

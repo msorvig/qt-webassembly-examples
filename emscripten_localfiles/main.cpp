@@ -3,6 +3,7 @@
 
 #include <emscripten.h>
 #include <emscripten/html5.h>
+#include <emscripten/val.h>
 
 std::function<void(char *, size_t, const char *)> g_qtFileDataReadyCallback;
 extern "C" EMSCRIPTEN_KEEPALIVE void qt_callFileDataReady(char *content, size_t contentSize, const char *fileName)
@@ -81,34 +82,6 @@ void loadFile(const char *accept, std::function<void(char *, size_t, const char 
     }, accept);
 }
 
-/*
-    Save file by triggering a browser file download.
-
-    Note that multiple copies of the file contents may be held in memory at the same time.
-*/
-void saveFile(const char *contentPointer, size_t contentLength, const char *fileNameHint)
-{
-    EM_ASM_({
-        
-        // Make the file contents and file name hint accessible to Javascript
-        const contentPointer = $0;
-        const contentLength = $1;
-        const fileNameHint = Pointer_stringify($2);
-        const fileContent = Module.HEAPU8.subarray(contentPointer, contentPointer + contentLength);
-
-        // Create download link and click it programatically
-        const fileblob = new Blob([fileContent], { type : 'application/octet-stream' } );
-        var link = document.createElement('a');
-        document.body.appendChild(link);
-        link.download = fileNameHint;
-        link.innerHtml = "N/A";
-        link.href = window.URL.createObjectURL(fileblob);
-        link.style = "display:none";
-        link.click();
-        document.body.removeChild(link);
-    }, contentPointer, contentLength, fileNameHint);
-}
-
 // Test harness follows.
 bool g_testNoop = false;
 extern "C" EMSCRIPTEN_KEEPALIVE void testLoadFile()
@@ -123,12 +96,46 @@ extern "C" EMSCRIPTEN_KEEPALIVE void testLoadFile()
     });
 }
 
+using namespace emscripten;
+
+/*
+    Save file by triggering a browser file download.
+*/
+void saveFile(const char *data, size_t length,  std::wstring fileNameHint)
+{
+    // Create file data Blob
+    val Blob = val::global("Blob");
+    val contentArray = val::array();
+    val content = val(typed_memory_view(length, data));
+    contentArray.call<void>("push", content);
+    val type = val::object();
+    type.set("type","application/octet-stream");
+    val fileBlob = Blob.new_(contentArray, type);
+
+    // Create Blob download link
+    val document = val::global("document");
+    val link = document.call<val>("createElement", std::string("a"));
+    link.set("download", fileNameHint);
+    val window = val::global("window");
+    val URL = window["URL"];
+    link.set("href", URL.call<val>("createObjectURL", fileBlob));
+    link.set("style", "display:none");
+
+    // Programatically click link
+    val body = document["body"];
+    body.call<void>("appendChild", link);
+    link.call<void>("click");
+    body.call<void>("removeChild", link);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void testSaveFile()
 {
     if (g_testNoop)
         return;
-    const char *data = "foobar";
-    saveFile(data, strlen(data), "foobar.txt");
+
+    const char *data = "foocontent";
+    std::wstring name = L"foofile";
+    saveFile(data, strlen(data), name);
 }
 
 int main(int argc, char **argv)

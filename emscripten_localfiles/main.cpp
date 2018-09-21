@@ -4,99 +4,81 @@
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <emscripten/val.h>
-
-std::function<void(char *, size_t, const char *)> g_qtFileDataReadyCallback;
-extern "C" EMSCRIPTEN_KEEPALIVE void qt_callFileDataReady(char *content, size_t contentSize, const char *fileName)
-{
-    if (g_qtFileDataReadyCallback == nullptr)
-        return;
-
-    g_qtFileDataReadyCallback(content, contentSize, fileName);
-    g_qtFileDataReadyCallback = nullptr;
-}
-
-// C++ local file access API
-void loadFile(const char *accept, std::function<void(char *, size_t, const char *)> fileDataReady)
-{
-    if (g_qtFileDataReadyCallback)
-        puts("Warning: Concurrent loadFile() calls are not supported. Cancelling earlier call");
-
-    // Call qt_callFileDataReady to make sure the emscripten linker does not 
-    // optimize it away. Set g_qtFileDataReadyCallback to null to make it a a no-op.
-    g_qtFileDataReadyCallback = nullptr;
-    qt_callFileDataReady(nullptr, 0, nullptr); 
-                            
-    g_qtFileDataReadyCallback = fileDataReady;
-    
-    EM_ASM_({
-
-        const accept = Pointer_stringify($0);
-        
-        // Crate file file input which whil display the native file dialog
-        var fileElement = document.createElement("input");
-        document.body.appendChild(fileElement);
-        fileElement.type = "file";
-        fileElement.style = "display:none";
-        fileElement.accept = accept;
-        fileElement.onchange = function(event) {
-            const files = event.target.files;
-
-            // Read files
-            for (var i = 0; i < files.length; i++) {
-                const file = files[i];
-                var reader = new FileReader();
-                reader.onload = function() {
-                    const name = file.name;
-                    var contentArray = new Uint8Array(reader.result);
-                    const contentSize = reader.result.byteLength;
-                    
-                    // Copy the file file content to the C++ heap.
-                    // Note: this could be simplified by passing the content as an
-                    // "array" type to ccall and then let it copy to C++ memory.
-                    // However, this built-in solution does not handle files larger
-                    // than ~15M (Chrome). Instead, allocate memory manually and
-                    // pass a pointer to the C++ side (which will free() it when done).
-                    const heapPointer = _malloc(contentSize);
-                    const heapBytes = new Uint8Array(Module.HEAPU8.buffer, heapPointer, contentSize);
-                    heapBytes.set(contentArray);
-                    
-                    // Null out the first data copy to enable GC. TODO: read file in chunks to avoid
-                    // holding two copies in memory here.
-                    reader = null;
-                    contentArray = null;
-                    
-                    // Call the C++ file data ready callback
-                    ccall("qt_callFileDataReady", null, 
-                        ["number", "number", "string"], [heapPointer, contentSize, name]);
-                };
-                reader.readAsArrayBuffer(file);
-            }
-            
-            // Clean up document
-            document.body.removeChild(fileElement);
-
-        }; // onchange callback
-
-        // Trigger file dialog open
-        fileElement.click();
-    }, accept);
-}
-
-// Test harness follows.
-bool g_testNoop = false;
-extern "C" EMSCRIPTEN_KEEPALIVE void testLoadFile()
-{
-    if (g_testNoop)
-        return;
-    loadFile("*", [](char *contentPointer, size_t contentSize, const char *fileName){
-        printf("File loaded %p %d %s\n", contentPointer, contentSize, fileName);
-        printf("First bytes: %x %x %x %x\n", contentPointer[0] & 0xff, contentPointer[1] & 0xff, 
-                                             contentPointer[2] & 0xff, contentPointer[3] & 0xff);
-        free(contentPointer);
-    });
-}
+#include <emscripten/bind.h>
 
 using namespace emscripten;
+
+typedef void (*FileDataCallback)(void *context, char *data, size_t length, const char *name);
+
+void readFileContent(val event)
+{
+    // Copy file content to WebAssembly memory and call the user file data handler
+
+    val fileReader = event["target"];
+
+    // Set up source typed array
+    val result = fileReader["result"]; // ArrayBuffer
+    val Uint8Array = val::global("Uint8Array");
+    val sourceTypedArray = Uint8Array.new_(result);
+
+    // Allocate and set up destination typed array
+    size_t size = result["byteLength"].as<size_t>();
+    void *buffer = malloc(size);
+    val destinationTypedArray = Uint8Array.new_(val::module_property("HEAPU8")["buffer"], size_t(buffer), size);
+    destinationTypedArray.call<void>("set", sourceTypedArray);
+
+    // Call user file data handler
+    FileDataCallback fileDataCallback = reinterpret_cast<FileDataCallback>(fileReader["data-filesReadyCallback"].as<size_t>());
+    void *context = reinterpret_cast<void *>(fileReader["data-filesReadyCallback"].as<size_t>());
+    fileDataCallback(context, static_cast<char *>(buffer), size, fileReader["data-name"].as<std::string>().c_str());
+}
+
+void readFiles(val event)
+{
+    // Read all selcted files using FileReader
+
+    val target = event["target"];
+    val files = target["files"];
+    int fileCount = files["length"].as<int>();
+    for (int i = 0; i < fileCount; i++) {
+        val file = files[i];
+        val fileReader = val::global("FileReader").new_();
+        fileReader.set("onload", val::module_property("qtReadFileContent"));
+        fileReader.set("data-filesReadyCallback", target["data-filesReadyCallback"]);
+        fileReader.set("data-filesReadyCallbackContext", target["data-filesReadyCallbackContext"]);
+        fileReader.set("data-name", file["name"]);
+        fileReader.call<void>("readAsArrayBuffer", file);
+    }
+}
+
+EMSCRIPTEN_BINDINGS(localfileaccess) {
+    function("qtReadFiles", &readFiles);
+    function("qtReadFileContent", &readFileContent);
+};
+
+void loadFile(const char *accept, FileDataCallback callback, void *context)
+{
+    // Create file input element which will dislay a native file dialog.
+    val document = val::global("document");
+    val input = document.call<val>("createElement", std::string("input"));
+    input.set("type", "file");
+    input.set("style", "display:none");
+    input.set("accept", val(accept));
+    
+    // Set JavaScript onchange callback which will be called on file(s) selected,
+    // and also forward the user C callback pointers so that the onchange
+    // callback can call it. (The onchange callback is actually a C function
+    // exposed to JavaScript with EMSCRIPTEN_BINDINGS).
+    input.set("onchange", val::module_property("qtReadFiles"));
+    input.set("data-filesReadyCallback", val(size_t(callback)));
+    input.set("data-filesReadyCallbackContext", val(size_t(context)));
+    
+    // Programatically activate input
+    val body = document["body"];
+    body.call<void>("appendChild", input);
+    input.call<void>("click");
+    body.call<void>("removeChild", input);
+}
 
 /*
     Save file by triggering a browser file download.
@@ -126,6 +108,23 @@ void saveFile(const char *data, size_t length,  std::wstring fileNameHint)
     body.call<void>("appendChild", link);
     link.call<void>("click");
     body.call<void>("removeChild", link);
+}
+
+// Test harness follows.
+
+bool g_testNoop = false;
+extern "C" EMSCRIPTEN_KEEPALIVE void testLoadFile()
+{
+    if (g_testNoop)
+        return;
+
+    void *context = nullptr;
+    loadFile("*", [](void *context, char *contentPointer, size_t contentSize, const char *fileName) {
+        printf("File loaded %p %d %s\n", contentPointer, contentSize, fileName);
+        printf("First bytes: %x %x %x %x\n", contentPointer[0] & 0xff, contentPointer[1] & 0xff,
+                                             contentPointer[2] & 0xff, contentPointer[3] & 0xff);
+        free(contentPointer);
+    }, context);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void testSaveFile()

@@ -10,11 +10,12 @@
     </div>
     <script>
         function load() {
-            ccall('testLoadFile', null);
+             Module.ccall('testLoadFile', null);
         }
 
         function save() {
-            ccall('testSaveFile', null);
+            console.log(Module)
+             Module.ccall('testSaveFile', null);
         }
     </script>
     <script src="main.js"></script> 

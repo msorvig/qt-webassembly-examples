@@ -1,7 +1,6 @@
 #include <qmui.h>
 
-#include <QtCore/qhtml5file.h>
-#include <QtCore/qhtml5file.h>
+#include "qhtml5file.h"
 
 int main(int argc, char **argv)
 {

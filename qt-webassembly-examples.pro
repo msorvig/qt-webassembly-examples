@@ -13,19 +13,7 @@ SUBDIRS = \
 
 qtHaveModule(mqtt):qtHaveModule(websockets): SUBDIRS += mqtt_simpleclient
 
-# Add Sensortag if its submodule has been synced
-exists($$PWD/SensorTagDemo/SensorTagDemo.pro) {
-    SUBDIRS += SensorTagDemo
-}
-
-# Add Slate if its submodule has been synced
-exists($$PWD/slate/slate.pro) {
-    SUBDIRS += slate
-}
-
-
-# Add Colordebugger if its submodule has been synced
-exists($$PWD/Colordebugger/colordebugger.pro) {
-#    SUBDIRS += SensorTagDemo
-}
-
+# Add submodule examples if they have been synced
+exists($$PWD/SensorTagDemo/SensorTagDemo.pro) : SUBDIRS += SensorTagDemo
+exists($$PWD/slate/slate.pro) : SUBDIRS += slate
+exists($$PWD/colordebugger/colordebugger.pro) : SUBDIRS += colordebugger

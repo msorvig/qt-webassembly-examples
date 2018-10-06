@@ -4,3 +4,6 @@
 [submodule "slate"]
 	path = slate
 	url = git@github.com:msorvig/slate.git
+[submodule "colordebugger"]
+	path = colordebugger
+	url = git@github.com:msorvig/colordebugger.git

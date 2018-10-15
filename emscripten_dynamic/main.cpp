@@ -1,4 +1,5 @@
 #include <emscripten.h>
+#include <emscripten/val.h>
 
 #include <dlfcn.h>
 
@@ -9,6 +10,10 @@ EMSCRIPTEN_KEEPALIVE int main() {
     
     // Call sayHelloFromA() from lib_a
     sayHelloFromA();
+
+    // Call console.log via emscripten::val
+    emscripten::val console = emscripten::val::global("console");
+    console.call<void>("log", std::string("Hello from emscripten::val"));
     
     // Call sayHelloFromB() from lib_b via dlopen
     void *lib_b = dlopen("lib_b.wasm", RTLD_LAZY);

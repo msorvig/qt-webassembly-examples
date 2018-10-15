@@ -14,14 +14,15 @@ all: main lib_a lib_b
 main:
 	# main lib with MAIN_MODULE=1. Note that this makes emcc not generate wasm loading code
 	# (see emscripten_dynamic.html)
+	mkdir -p OUT
 	cp emscripten_dynamic.html OUT/
-	${STDLIBS} emcc main.cpp -o OUT/dynamicmain.js -g3 -std=c++11 -s MAIN_MODULE=1 -s WASM=1 -s MODULARIZE=1 -s FORCE_FILESYSTEM=1
+	${STDLIBS} emcc main.cpp -o OUT/dynamicmain.js --bind -g3 -std=c++11 -s MAIN_MODULE=1 -s WASM=1 -s MODULARIZE=1 -s FORCE_FILESYSTEM=1
 lib_a:
 	emcc lib_a.cpp -o OUT/lib_a.o -g3 -std=c++11
-	emcc OUT/lib_a.o -o OUT/lib_a.${OUT_SUFFIX} -g3 -std=c++11 -s SIDE_MODULE=1 ${WASM}
+	emcc OUT/lib_a.o -o OUT/lib_a.${OUT_SUFFIX} --bind -g3 -std=c++11 -s SIDE_MODULE=1 ${WASM}
 
 	# ### emscripten does not generate wasm for versioned output files (like ".wasm.1")
-	emcc OUT/lib_a.o -o OUT/lib_a.wasm.1 -g3 -std=c++11 -s SIDE_MODULE=1 -s WASM=1
+	# emcc OUT/lib_a.o -o OUT/lib_a.wasm.1 -g3 -std=c++11 -s SIDE_MODULE=1 -s WASM=1
 
 lib_b:
 	emcc lib_b.cpp -o OUT/lib_b.${OUT_SUFFIX} -g3 -std=c++11 -s SIDE_MODULE=1 ${WASM}

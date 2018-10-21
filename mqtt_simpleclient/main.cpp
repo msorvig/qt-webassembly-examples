@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     MainWindow w;
 
-#ifdef Q_OS_HTML5
+#ifdef Q_OS_WASM
     w.showFullScreen();
 #else
     w.show();

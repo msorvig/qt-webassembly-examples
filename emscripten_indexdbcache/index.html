@@ -1,0 +1,101 @@
+<html>
+<head>
+    <meta charset="utf-8"/>
+</head>
+<body onload="init()">
+    <div>
+        Wasm IndexDB Caching (check console output)
+    </div>
+    <script>
+
+async function init() {
+    console.log("Hello World from javascript init()");
+    // testCache();
+    await testWasmFetchCompile();
+}
+
+function testCache()
+{
+    getQtWasmCache().then(function(dbhelper) {
+        console.log("got cache");
+        dbhelper.put(key, "this is the value").then(function() {
+            console.log("set ok");
+        dbhelper.get(key).then(function(value) {
+            console.log("get ok");
+            console.log(value);
+        }); });
+    });
+}
+
+async function testWasmFetchCompile() {
+    var key = "491d5e841236bda43a585092044b97ea61a1c749fa56db3aeb2d82191d098ae0"; // shasum -p -a 256 main.wasm
+
+    let cache = await getQtWasmCache();
+    var module = await cache.get(key);
+    if (module === undefined) {
+        console.log("cache miss, downloading and compiling");
+        let req = await fetch("main.wasm");
+        let wasmbinary = await req.arrayBuffer();
+        module = await WebAssembly.compile(wasmbinary);
+        await cache.put(key, module);
+    } else {
+        console.log("cache hit");
+    }
+    console.log(module)
+}
+
+function QtWasmCache(db, name) {
+    return {
+        put: function(key, value) {
+            return new Promise(function(resolve, reject) {
+                try {
+                    var req = db.transaction([name], "readwrite").objectStore(name).put(value, key);
+                    req.onsuccess = resolve;
+                    req.onerror = function() {
+                        console.log("Qt Wasm cache put error: " + req.error);
+                        resolve(); // Log error and continue
+                    }
+                } catch (error) {
+                    console.log("Qt Wasm cache put error: " + error);
+                    resolve();
+                }
+            });
+        },
+        get: function(key) {
+            return new Promise(function(resolve, reject) {
+                try {
+                    var req = db.transaction([name], "readwrite").objectStore(name).get(key);
+                    req.onsuccess = function () { resolve(req.result) };
+                    req.onerror = function () {
+                        console.log("Qt Wasm cache get error: " + req.error);
+                        resolve(undefined);
+                    };
+                } catch (error) {
+                    console.log("Qt Wasm cache put error: " + error);
+                    resolve(undefined);
+                }
+            });
+        }
+    }
+}
+
+function getQtWasmCache() {
+    return new Promise(function(resolve, reject) {
+        var version = 1;
+        var name = "qtWasmCache";
+        var request = window.indexedDB.open(name, version);
+
+        request.onupgradeneeded = function(event) {
+            var db = event.target.result;
+            db.createObjectStore(name);
+        };
+
+        request.onsuccess = function(event) {
+            var db = event.target.result;
+            return resolve(QtWasmCache(db, name));
+        }
+    });
+}
+    </script>
+</body>
+</html>

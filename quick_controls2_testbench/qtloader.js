@@ -202,7 +202,7 @@ function QtLoader(config)
         config.path = config.path.concat("/");
 
     if (config.environment === undefined)
-        config.environment = {}
+        config.environment = {};
 
     var publicAPI = {};
     publicAPI.webAssemblySupported = webAssemblySupported();
@@ -323,7 +323,7 @@ function QtLoader(config)
 
         Module.locateFile = Module.locateFile || function(filename) {
             return config.path + filename;
-        }
+        };
 
         // Attach status callbacks
         Module.setStatus = Module.setStatus || function(text) {
@@ -331,16 +331,16 @@ function QtLoader(config)
             // is "Running..."
             if (text.startsWith("Running"))
                 setStatus("Running");
-        }
+        };
         Module.monitorRunDependencies = Module.monitorRunDependencies || function(left) {
           //  console.log("monitorRunDependencies " + left)
-        }
+        };
 
         // Attach standard out/err callbacks.
         Module.print = Module.print || function(text) {
             if (config.stdoutEnabled)
                 console.log(text)
-        }
+        };
         Module.printErr = Module.printErr || function(text) {
             // Filter out OpenGL getProcAddress warnings. Qt tries to resolve
             // all possible function/extension names at startup which causes
@@ -350,7 +350,7 @@ function QtLoader(config)
 
             if (config.stderrEnabled)
                 console.log(text)
-        }
+        };
 
         // Error handling: set status to "Exited", update crashed and
         // exitCode according to exit type.
@@ -361,7 +361,7 @@ function QtLoader(config)
             publicAPI.crashed = true;
             publicAPI.exitText = text;
             setStatus("Exited");
-        }
+        };
         Module.quit = Module.quit || function(code, exception) {
             if (exception.name == "ExitStatus") {
                 // Clean exit with code
@@ -372,7 +372,7 @@ function QtLoader(config)
                 publicAPI.crashed = true;
             }
             setStatus("Exited");
-        }
+        };
 
         // Set environment variables
         Module.preRun = Module.preRun || []
@@ -398,8 +398,8 @@ function QtLoader(config)
                 return;
             }
             loadEmscriptenModule(applicationName);
+        };
 
-        }
         publicAPI.exitCode = undefined;
         publicAPI.exitText = undefined;
         publicAPI.crashed = false;

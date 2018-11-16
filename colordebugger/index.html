@@ -1,0 +1,150 @@
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Wide Color</title>
+    <style>
+
+    body {
+        margin: 40px;
+        width: 600px;
+    }
+
+    img {
+        border-radius: 3%;
+    }
+    .wrapper {
+      display: grid;
+      grid-template-columns: 200px 200px 200px;
+      grid-gap: 10px;
+      background-color: #fff;
+      color: #444;
+    }
+
+    .box {
+      font-size: 150%;
+      text-align: center;
+    }
+
+    #colordebugger-container {
+        width: 400px;
+        height: 400px;
+        margin: auto;
+
+        /* Center Qt Placeholder content */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #colordebugger-canvas {
+        width : 100%;
+        height : 100%;
+    }
+    </style>
+</head>
+<body onload="init()">
+    <div>
+        <h2>
+        Wide Color
+        </h2>
+
+        Modern displays support wider color gamuts, but can you
+        spot the difference between standard and wide color gamut images?
+        Use the color debugger below if needed.
+        <br><br>
+
+        <div class="wrapper">
+          <div class="box">sRGB</div>
+          <div class="box">AdobeRGB</div>
+          <div class="box">ProPhoto</div>
+          <img id="rose-sRGB" src="Rose-sRGB.jpg" width="200px" height = "200px"></img>
+          <img id="rose-AdobeRGB" src="Rose-AdobeRGB.jpg" width="200px" height = "200px"></img>
+          <img id="rose-ProPhotoRGB" src="Rose-ProPhoto.jpg" width="200px" height = "200px"></img>
+        </div>
+        <br>
+        <font size="2">Image source: <a href = "https://webkit.org/blog-files/color-gamut/">webkit.org</a></font>
+    </div>
+
+    <br>
+
+    <noscript><h4>JavasScript is disabled. Please enable JavasScript to use the color debugger.</h4></noscript>
+    <div id="colordebugger-container" allign="center">
+        <img id="colordebugger-placeholder" src="chromadiagram.png" width="100%" height="100%"></img>
+        <canvas id="colordebugger-canvas" oncontextmenu="event.preventDefault()"></canvas>
+    </div>
+    <script>
+        function handleMouseMove(event) {
+            var imageRect = event.target.getBoundingClientRect();
+            var x = event.clientX - imageRect.left;
+            var y = event.clientY - imageRect.top;
+            var components = sampleImage(event.target.id, x, y)
+            var colorSpaceIndex;
+            if (event.target.id == "rose-sRGB")
+                colorSpaceIndex = 0;
+            if (event.target.id == "rose-AdobeRGB")
+                colorSpaceIndex = 1;
+            if (event.target.id == "rose-ProPhotoRGB")
+                colorSpaceIndex = 2;
+            Module.setColor(components[0], components[1], components[2], colorSpaceIndex);
+        }
+
+        // image canvases (for sampling)
+        var imageCanvases = {}
+        function setupImageForSampling(imageElement, imageId)
+        {
+            var canvas = document.createElement('canvas');
+            canvas.width = imageElement.width;
+            canvas.height = imageElement.height;
+            canvas.getContext('2d').drawImage(imageElement, 0, 0, imageElement.width, imageElement.height);
+            imageCanvases[imageId] = canvas;
+        }
+
+        function sampleImage(imageId, x, y) {
+            return imageCanvases[imageId].getContext('2d').getImageData(x, y, 1, 1).data;
+        }
+
+        function init() {
+            console.log("init");
+
+            document.getElementById("rose-sRGB").onmousemove = handleMouseMove;
+            document.getElementById("rose-AdobeRGB").onmousemove = handleMouseMove;
+            document.getElementById("rose-ProPhotoRGB").onmousemove = handleMouseMove;
+            setupImageForSampling(document.getElementById("rose-sRGB"), "rose-sRGB");
+            setupImageForSampling(document.getElementById("rose-AdobeRGB"), "rose-AdobeRGB");
+            setupImageForSampling(document.getElementById("rose-ProPhotoRGB"), "rose-ProPhotoRGB");
+
+            var placeholder = document.getElementById('colordebugger-placeholder');
+            var canvas = document.getElementById('colordebugger-canvas');
+
+            function setColorDebuggerVisible(visible) {
+                placeholder.style.display = !visible ? "block" : "none";
+                canvas.style.display = visible ? "block" : "none";
+            }
+
+            var qtLoader = QtLoader({
+                showLoader: function(loaderStatusText) {
+                    setColorDebuggerVisible(false);
+                    console.log("showLoader " + loaderStatusText);
+                },
+                showError: function(errorText) {
+                    setColorDebuggerVisible(false);
+                    console.log("showError " + errorText);
+                },
+                showExit: function() {
+                    setColorDebuggerVisible(false);
+                    console.log("exit");
+                    console.log(qtLoader.exitCode);
+                    console.log(qtLoader.exitText);
+                },
+                showCanvas: function() {
+                    setColorDebuggerVisible(true);
+                    console.log("showCanvas");
+                    return canvas;
+                },
+            });
+            qtLoader.loadEmscriptenModule("colordebugger");
+        }
+    </script>
+    <script async type="text/javascript" src="qtloader.js"></script>
+</body>
+</html>

@@ -1,37 +1,30 @@
 #include <stdio.h>
 #include <pthread.h>
 
-#include <emscripten.h>
-#include <emscripten/html5.h>
-
 using namespace std;
 
-int value;
+int value = 0;
 
 int main() {
 
-    printf("hello, world from main()!\n");
-    fprintf(stderr, "anyone?");
-    fflush(stdout); // ### stdout goes nowhere?
+    printf("hello world from main()!\n");
 
-    value = 10;
+    const int threadCount =2;
 
-    EM_ASM_({
-        console.log("Value before starting thread (expecting 10) " + $0);
-    }, value);
+    pthread_t threads[threadCount];
+    for (int i = 0; i < threadCount; ++i) {
+        pthread_create(&(threads[i]) , NULL, [](void *) -> void * {
+            printf("hello world from thread \n");
+            value += 1;
+            return nullptr;
+        }, nullptr);
+    }
 
-    // start a thread which updates the value
-    pthread_t thread;
-    bool threadCreated = pthread_create(&thread, NULL, [](void *) -> void * {
-        value = 20;
-        return nullptr;
-    }, nullptr);
+    for (int i = 0; i < threadCount; ++i) {
+        pthread_join(threads[i], NULL);
+    }
 
-    bool threadJoined = pthread_join(thread, NULL);
-
-    EM_ASM_({
-        console.log("Value after joining thread (expecting 20) " + $0);
-    }, value);
+    printf("Value after joining thread (expecting %d) %d \n", threadCount, value);
 
     return 0;
 }

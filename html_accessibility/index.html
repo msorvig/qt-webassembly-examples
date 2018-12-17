@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+.qtcontainer {
+  position: relative;
+  width: 400px;
+  height: 400px;
+}
+
+.qtcanvas {
+  background: orange;
+  position: absolute;
+  z-index: 1;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+}
+
+.qta11ycontainer {
+    position: absolute;
+    z-index: 0;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+}
+.qta11y_item {
+    position: absolute;
+}
+
+</style>
+</head>
+<body>
+    Canvas Accessibility Testing
+    <br>
+    <br>
+    Custom UI Items on the canvas (items not shown) are duplicated by
+    native HTML elements, z-ordered behind the canvas. The canvas is aria-hidden and has the
+    "presentation" role. Screen readers and other assistive tools should then ignore the canvas
+    and and ineract with the HTML elements.
+    <br>
+    <br>
+<div class="qtcontainer">
+  <div class="qtcanvas" aria-hidden=true role="presentation">
+  </div>
+  <div class="qta11ycontainer">
+      <div class="qta11y_item" style="left:10px; top:10px">The beginning is the end is the begining<br></div>
+      <button class="qta11y_item" type="button" style="left:10px; top:50px">Lunch</button>
+      <button class="qta11y_item" type="button" style="left:10px; top:70px">Launch</button>
+  </div>
+</div>
+</body>
+</html>

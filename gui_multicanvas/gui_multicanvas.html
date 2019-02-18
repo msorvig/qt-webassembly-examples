@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>Multi-Canvas Qt</title>
+  <link href='simple.css' rel='stylesheet' type='text/css' />
+</head>
+
+<body unselectable="on">
+  <!--div class="buttonbar">
+    <button class="button create-button">Create Window</button>
+  </div-->
+
+  <script type="text/javascript" src="ventus.min.js"></script>
+  <script type="text/javascript" src="qtloader.js"></script>
+  <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+      var wm = new Ventus.WindowManager();
+      var width = 350;
+      var height = 220;
+      var num = -1;
+
+      let createTestCanvas = function(i) {
+          var canvas = document.createElement("canvas");
+          canvas.id = "TestCanvas" + i;
+          canvas.class = "QtWindowCanvas";
+          canvas.style.width = "100%";
+          canvas.style.height = "100%";
+          return canvas;
+      }
+
+      let createWindow = function (num, posx, posy) {
+          var canvas = createTestCanvas(num);
+          var window = wm.createWindow({
+              title: 'Qt Screen ' + (num),
+              content : canvas,
+              x: posx,
+              y: posy,
+              width: width,
+              height: height,
+              animations: false,
+              stayinspace: true,
+              events: {
+                  closed: function () {
+                      this.destroy();
+                  }
+              }
+            });
+            window.content = canvas;
+            return window
+        };
+
+        let windows = [createWindow(1, 50, 50),           createWindow(2, width + 100, 50),
+                       createWindow(3, 50, height + 100), createWindow(4, width + 100, height + 100)];
+
+        var qtloader = QtLoader({
+            canvasElements: windows.map(function(window) { return window.content }),
+            showError: function(errorText) {
+                console.log("error " + errorText);
+            },
+            showCanvas: function() {
+                windows.map(function(window) { window.open() });
+            },
+        });
+
+        qtloader.loadEmscriptenModule("gui_multicanvas");
+
+//      document.querySelector('.create-button').addEventListener('click', function () { });
+    });
+  </script>
+
+</body>
+</html>

@@ -6,6 +6,7 @@ SUBDIRS = \
     gui_raster \
     gui_lifecycle \
     gui_localfiles \
+    gui_multicanvas \
     widgets_wiggly \
     quick_hellosquare \
     quick_clocks \

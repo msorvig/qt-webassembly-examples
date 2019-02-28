@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS = \
+    core_network \
     gui_opengl \
     gui_raster \
     gui_lifecycle \

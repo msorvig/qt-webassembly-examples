@@ -1,0 +1,28 @@
+<html>
+
+<script>
+
+async function main_fetch()
+{
+    console.log("protocol " + window.location.protocol + 
+                " hostname " + window.location.hostname + 
+                " port " + window.location.port + 
+                " pathname " + window.location.pathname);
+
+    console.log("fetching 'foofile' from component/index.html")
+    await fetch("foofile")
+    
+    await js1_fetch();
+    await js2_fetch();
+}    
+    
+</script>    
+
+<script src = "../js1.js"> </script>
+<script src = "js2.js"> </script>
+
+
+<body onload="main_fetch()">
+    HTML relative url handling; check console output
+<body>    
+</html>

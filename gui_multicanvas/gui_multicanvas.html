@@ -6,9 +6,9 @@
 </head>
 
 <body unselectable="on">
-  <!--div class="buttonbar">
-    <button class="button create-button">Create Window</button>
-  </div-->
+  <div class="buttonbar">
+    <button class="button create-button">Create Window/Screen</button>
+  </div>
 
   <script type="text/javascript" src="ventus.min.js"></script>
   <script type="text/javascript" src="qtloader.js"></script>
@@ -18,18 +18,22 @@
       var width = 350;
       var height = 220;
       var num = -1;
+      var x = 200;
+      var y = 200;
 
-      let createTestCanvas = function(i) {
+      // Creates a <canvas> which usess 100% of the available size.
+      let createCanvas = function(i) {
           var canvas = document.createElement("canvas");
-          canvas.id = "TestCanvas" + i;
+          canvas.id = "QtCanvas" + i;
           canvas.class = "QtWindowCanvas";
           canvas.style.width = "100%";
           canvas.style.height = "100%";
           return canvas;
       }
 
+      // Creates a new ventus window with a canvas as content
       let createWindow = function (num, posx, posy) {
-          var canvas = createTestCanvas(num);
+          var canvas = createCanvas(num);
           var window = wm.createWindow({
               title: 'Qt Screen ' + (num),
               content : canvas,
@@ -41,17 +45,33 @@
               stayinspace: true,
               events: {
                   closed: function () {
+                      console.log("close " + this.content.id)
+                      qtloader.removeCanvasElement(this.content);
                       this.destroy();
                   }
               }
             });
-            window.content = canvas;
+            window.content = canvas; // so we can access the canvas in qtloader.showCanvas()
             return window
         };
 
+        // Creates one additional window
+        let createAdditonalWindow = function() {
+            ++num;
+            x += 40;
+            y += 40;
+            let window = createWindow(num, x, y);
+            window.open();
+            qtloader.addCanvasElement(window.content);
+        }
+        document.querySelector('.create-button').addEventListener('click', createAdditonalWindow);
+
+        // Create a set of windows/canvases which will be available on startup.
         let windows = [createWindow(1, 50, 50),           createWindow(2, width + 100, 50),
                        createWindow(3, 50, height + 100), createWindow(4, width + 100, height + 100)];
+        num = 4;
 
+        // Load the Qt application
         var qtloader = QtLoader({
             canvasElements: windows.map(function(window) { return window.content }),
             showError: function(errorText) {
@@ -61,10 +81,7 @@
                 windows.map(function(window) { window.open() });
             },
         });
-
         qtloader.loadEmscriptenModule("gui_multicanvas");
-
-//      document.querySelector('.create-button').addEventListener('click', function () { });
     });
   </script>
 

@@ -10,7 +10,7 @@
     <button class="button create-button">Create Window/Screen</button>
   </div>
 
-  <script type="text/javascript" src="ventus.min.js"></script>
+  <script type="text/javascript" src="ventus.mod.js"></script>
   <script type="text/javascript" src="qtloader.js"></script>
   <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function () {
@@ -44,8 +44,10 @@
               animations: false,
               stayinspace: true,
               events: {
+                  resized: function() {
+                      qtloader.resizeCanvasElement(this.content);
+                  },
                   closed: function () {
-                      console.log("close " + this.content.id)
                       qtloader.removeCanvasElement(this.content);
                       this.destroy();
                   }

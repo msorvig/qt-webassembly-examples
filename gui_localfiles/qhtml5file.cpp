@@ -42,7 +42,7 @@
 #include <QtCore/QTimer>
 
 // Non-operational cross platform stubs for thee QHtml5File file load/save API,
-// which compiling code that uses it also on non Q_OS_HTML5 platforms. 
+// which compiling code that uses it also on non Q_OS_WASM platforms.
 // TODO: QFileDialog fallback
 
 void QHtml5File::load(const QString &accept, std::function<void(const QByteArray &, const QString &)> fileDataReady)

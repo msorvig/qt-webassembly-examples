@@ -2,7 +2,7 @@
 
 #include <functional>
 
-#ifdef Q_OS_HTML5
+#ifdef Q_OS_WASM
 #include <emscripten.h>
 #endif
 
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
     
     QMUIWindow window;
 
-#ifdef Q_OS_HTML5
+#ifdef Q_OS_WASM
     window.addButton("exit(0)", [](){
         emscripten_force_exit(0);
     });

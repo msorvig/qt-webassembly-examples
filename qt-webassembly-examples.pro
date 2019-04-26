@@ -8,6 +8,7 @@ SUBDIRS = \
     gui_lifecycle \
     gui_localfiles \
     gui_multicanvas \
+    widgets_mandelbrot \
     widgets_wiggly \
     quick_hellosquare \
     quick_clocks \

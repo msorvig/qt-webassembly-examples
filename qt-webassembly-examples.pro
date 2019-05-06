@@ -8,13 +8,13 @@ SUBDIRS = \
     gui_lifecycle \
     gui_localfiles \
     gui_multicanvas \
-    widgets_mandelbrot \
     widgets_wiggly \
     quick_hellosquare \
     quick_clocks \
     quick_controls2_gallery \
     quick_controls2_testbench \
 
+qtConfig(thread): SUBDIRS += widgets_mandelbrot
 qtHaveModule(mqtt):qtHaveModule(websockets): SUBDIRS += mqtt_simpleclient
 
 # Add submodule examples if they have been synced

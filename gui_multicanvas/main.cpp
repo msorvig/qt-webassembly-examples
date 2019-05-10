@@ -1,6 +1,39 @@
 #include <QtGui>
+#ifdef HAVE_WIDGETS
+#include <QtWidgets>
+#endif
 
 #include "hellowindow.h"
+#include "rasterwindow.h"
+
+QWindow *createHelloOpenGLWindow()
+{
+    return new HelloWindow();
+}
+
+QWindow *createRasterWindow()
+{
+    return new RasterWindow();
+}
+
+#ifdef HAVE_WIDGETS
+QWindow *createQWidgetMainWindow()
+{
+    QWidget* mainWindow = new QMainWindow();
+    mainWindow->winId();
+    return mainWindow->windowHandle();
+}
+#endif
+
+// select window content type
+QWindow *createWindow(int screenAddress)
+{
+    QWindow *window = (screenAddress% 16 == 0 ) ? createHelloOpenGLWindow() : createRasterWindow();
+    //QWindow *window = createHelloOpenGLWindow();
+    //QWindow *window = createMaindow();
+    //QWindow *window = createRasterWindow();
+    return window;
+}
 
 int main(int argc, char **argv)
 {
@@ -15,10 +48,17 @@ int main(int argc, char **argv)
         ++i;
     }
 
+    // Verify that QWidnows can be constructed, even if there are
+    // no screens.
+    if (QGuiApplication::screens().size() == 0) {
+        QWindow *dummy = createHelloOpenGLWindow();
+        dummy->setScreen(nullptr);
+    }
+
     // One window per screen
     QHash<QScreen *, QWindow *> windows;
     auto addScreenWindow = [&windows](QScreen *screen) {
-        HelloWindow *window = new HelloWindow();
+        QWindow *window = createWindow(int(screen));
         window->setScreen(screen);
         window->showFullScreen();
         windows.insert(screen, window);

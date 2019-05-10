@@ -144,10 +144,10 @@ class Window {
     }
     
     close() {
-        windows.splice( windows.indexOf(this.windowContainer), 1 );
-        root.removeChild(this.windowContainer);
         if (this.closeCallback !== undefined)
             this.closeCallback();
+        windows.splice( windows.indexOf(this.windowContainer), 1 );
+        root.removeChild(this.windowContainer);
     }
     
     onResize(callback) {
@@ -160,7 +160,6 @@ class Window {
 
     set visible(visible) {
         this.windowContainer.style.visibility = visible ? "visible" : "hidden"
-        console.log("visible " + visible + " " + this.windowContainer.style.visibility)
     }
     
     get title() {

@@ -4,10 +4,13 @@
 </head>
 
 <body unselectable="on">
-    <button type="button" id="create-window-button" disabled>Create Window</button>
+    <div id="appcontrol" style="width = 100%; height: 40px;">App Control:</div>
+    <div id="rafdebug" style="position: absolute;  bottom: 0; width = 100%; height: 40px;">RAF Control:</div>
 
     <script type="text/javascript" src="qtloader.js"></script>
     <script type="text/javascript" src="qwm.js"></script>
+    <script type="text/javascript" src="qrafdebug.js"></script>
+    <script type="text/javascript" src="qwebui.js"></script>
     <script type="text/javascript">        
 
         // Application/example code
@@ -19,18 +22,30 @@
         
         function init()
         {
-            console.log("init")
-            
-            // Set up "add window" buttton, but disable until Qt is ready
-            createWindowButton = document.querySelector("#create-window-button");
-            createWindowButton.addEventListener("click", createAdditinalWindow);
-            
-            // Create 4 inital windows
-            initialWindows = [createNumberedWindow(1, 50, 50),
-                              createNumberedWindow(2, 400, 50),
-                              createNumberedWindow(3, 50, 300), 
-                              createNumberedWindow(4, 400, 300)];
-            windowIndex = 5;
+            // Set up Application Control
+            let appcontrolelement = document.querySelector("#appcontrol");
+            let createApplicationButton = qwebui_button(appcontrolelement, "Create Application", () => {
+                createApplicationButton.setEnabled(false);
+                createApplication();
+            });
+            createWindowButton = qwebui_button(appcontrolelement, "Create Window", createAdditinalWindow);
+            createWindowButton.setEnabled(false);
+
+            // Set up RequestAnimationFrame Control
+            qrafdebug_interpose();
+            let rafdebugelement = document.querySelector("#rafdebug");
+            qwebui_checkbox(rafdebugelement, "run", true, qrafdebug_setRunning);
+            qwebui_button(rafdebugelement, "step", qrafdebug_step);
+            let label = qwebui_label(rafdebugelement, "");
+            qrafdebug_setPendingRequestCallback((pending) => label.setText(pending ? "frame requested" : ""))
+
+        }
+        
+        function createApplication() 
+        {
+            // Create 1 inital window
+            initialWindows = [createNumberedWindow(1, 50, 50)];
+            windowIndex = 2;
             
             // load Qt
             loadQt();
@@ -45,13 +60,13 @@
                 },
                 showCanvas: qtReady
             });
-            qtloader.loadEmscriptenModule("gui_multicanvas");
+            qtloader.loadEmscriptenModule("multicanvas");
         }
         
         function qtReady()
         {
             console.log("qtReady");
-            createWindowButton.disabled = false;
+            createWindowButton.setEnabled(true);
             initialWindows.map(function(window) { window.visible = true });
         }
         
@@ -78,9 +93,8 @@
         {
             console.log("createAdditinalWindow");
             var window = createNumberedWindow(windowIndex, 10 + windowCascade, 10 + windowCascade);
-            window.visible = true;
-            
             qtloader.addCanvasElement(window.content);
+            window.visible = true;
             
             windowCascade += 25;
             windowIndex += 1;

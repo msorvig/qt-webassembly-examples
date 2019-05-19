@@ -5,11 +5,13 @@
 
 <body unselectable="on">
     <div id="appcontrol" style="width = 100%; height: 40px;">App Control:</div>
-    <div id="rafdebug" style="position: absolute;  bottom: 0; width = 100%; height: 40px;">RAF Control:</div>
+    <div id="rafdebug" style="position: absolute;  bottom: 30; width = 100%; height: 30px;">RAF Control:</div>
+    <div id="timerdebug" style="position: absolute;  bottom: 0; width = 100%; height: 30px;">Timer Control:</div>
 
     <script type="text/javascript" src="qtloader.js"></script>
     <script type="text/javascript" src="qwm.js"></script>
     <script type="text/javascript" src="qrafdebug.js"></script>
+    <script type="text/javascript" src="qtimerdebug.js"></script>
     <script type="text/javascript" src="qwebui.js"></script>
     <script type="text/javascript">        
 
@@ -34,13 +36,36 @@
             // Set up RequestAnimationFrame Control
             qrafdebug_interpose();
             let rafdebugelement = document.querySelector("#rafdebug");
-            qwebui_checkbox(rafdebugelement, "run", true, qrafdebug_setRunning);
-            qwebui_button(rafdebugelement, "step", qrafdebug_step);
+            qwebui_checkbox(rafdebugelement, "run", true, (checked) => {
+                qrafdebug_setRunning(checked);
+                rafdebugstep.setEnabled(!checked);
+            });
+            let rafdebugstep = qwebui_button(rafdebugelement, "step", qrafdebug_step);
+            rafdebugstep.setEnabled(false);
             let label = qwebui_label(rafdebugelement, "");
             qrafdebug_setPendingRequestCallback((pending) => label.setText(pending ? "frame requested" : ""))
+            
+            // Set up TimerDebug Control
+            qtimerdebug_interpose();
+            let timerdebugelement = document.querySelector("#timerdebug");
+            qwebui_checkbox(timerdebugelement, "run", true, (checked) => {
+                qtimerdebug_setRunning(checked);
+                timerdebugstep.setEnabled(!checked);
+                timerdebugstepall.setEnabled(!checked);
+            });
+            let timerdebugstep = qwebui_button(timerdebugelement, "step", qtimerdebug_step);
+            timerdebugstep.setEnabled(false);
+            let timerdebugstepall = qwebui_button(timerdebugelement, "step all", qtimerdebug_stepAll);
+            timerdebugstepall.setEnabled(false);
+
+            let timersLabel = qwebui_label(timerdebugelement, "Active Timers []");
+            // let intervalsLabel = qwebui_label(timerdebugelement, "Active Intervals []");
+            qtimerdebug_setActiveTimersChangedCallback((timers, intervals) => {
+                timersLabel.setText("Active Timers [" + timers.join(", ") + "]");
+            });
 
         }
-        
+
         function createApplication() 
         {
             // Create 1 inital window

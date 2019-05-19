@@ -19,5 +19,6 @@ QMAKE_POST_LINK += $$QMAKE_COPY $$quote($$PWD/multicanvas.html) $$quote($$OUT_PW
 QMAKE_POST_LINK += $$QMAKE_COPY $$quote($$PWD/qwm.js) $$quote($$OUT_PWD) $$escape_expand(\n\t)
 QMAKE_POST_LINK += $$QMAKE_COPY $$quote($$PWD/qwebui.js) $$quote($$OUT_PWD) $$escape_expand(\n\t)
 QMAKE_POST_LINK += $$QMAKE_COPY $$quote($$PWD/qrafdebug.js) $$quote($$OUT_PWD) $$escape_expand(\n\t)
+QMAKE_POST_LINK += $$QMAKE_COPY $$quote($$PWD/qtimerdebug.js) $$quote($$OUT_PWD) $$escape_expand(\n\t)
 
 

@@ -13,7 +13,7 @@
     <script type="text/javascript" src="qrafdebug.js"></script>
     <script type="text/javascript" src="qtimerdebug.js"></script>
     <script type="text/javascript" src="qwebui.js"></script>
-    <script type="text/javascript">        
+    <script type="text/javascript">
 
         // Application/example code
         var initialWindows = [];
@@ -21,7 +21,7 @@
         var windowIndex = 0;
         var createWindowButton = undefined;
         var qtLoader = undefined;
-        
+
         function init()
         {
             // Set up Application Control
@@ -44,7 +44,7 @@
             rafdebugstep.setEnabled(false);
             let label = qwebui_label(rafdebugelement, "");
             qrafdebug_setPendingRequestCallback((pending) => label.setText(pending ? "frame requested" : ""))
-            
+
             // Set up TimerDebug Control
             qtimerdebug_interpose();
             let timerdebugelement = document.querySelector("#timerdebug");
@@ -66,16 +66,16 @@
 
         }
 
-        function createApplication() 
+        function createApplication()
         {
             // Create 1 inital window
             initialWindows = [createNumberedWindow(1, 50, 50)];
             windowIndex = 2;
-            
+
             // load Qt
             loadQt();
         }
-        
+
         function loadQt()
         {
             qtloader = QtLoader({
@@ -87,14 +87,14 @@
             });
             qtloader.loadEmscriptenModule("multicanvas");
         }
-        
+
         function qtReady()
         {
             console.log("qtReady");
             createWindowButton.setEnabled(true);
             initialWindows.map(function(window) { window.visible = true });
         }
-        
+
         // Creates a <canvas> which usess 100% of the available size.
         function createCanvas(i) {
             var canvas = document.createElement("canvas");
@@ -103,7 +103,7 @@
             canvas.style.height = "100%";
             return canvas;
         }
-        
+
         function createNumberedWindow(number, x, y, )
         {
             var window = new Window(x, y);
@@ -111,7 +111,7 @@
             window.content = createCanvas(number);
             window.onClose(() => qtloader.removeCanvasElement(window.content));
             window.onResize(() => qtloader.resizeCanvasElement(window.content));
-            return window; 
+            return window;
         }
 
         function createAdditinalWindow()
@@ -120,7 +120,7 @@
             var window = createNumberedWindow(windowIndex, 10 + windowCascade, 10 + windowCascade);
             qtloader.addCanvasElement(window.content);
             window.visible = true;
-            
+
             windowCascade += 25;
             windowIndex += 1;
         }

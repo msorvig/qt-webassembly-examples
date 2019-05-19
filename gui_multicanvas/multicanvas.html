@@ -58,10 +58,10 @@
             let timerdebugstepall = qwebui_button(timerdebugelement, "step all", qtimerdebug_stepAll);
             timerdebugstepall.setEnabled(false);
 
-            let timersLabel = qwebui_label(timerdebugelement, "Active Timers []");
+            let timersLabel = qwebui_label(timerdebugelement, "Timer Ticks: 0 Active Timers []");
             // let intervalsLabel = qwebui_label(timerdebugelement, "Active Intervals []");
-            qtimerdebug_setActiveTimersChangedCallback((timers, intervals) => {
-                timersLabel.setText("Active Timers [" + timers.join(", ") + "]");
+            qtimerdebug_setActiveTimersChangedCallback((ticks, timers, intervals) => {
+                timersLabel.setText("Timer Ticks: " + ticks + " Active Timers [" + timers.join(", ") + "]");
             });
 
         }

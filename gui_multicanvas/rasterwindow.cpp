@@ -15,7 +15,7 @@ RasterWindow::RasterWindow()
         ++m_timeoutCount;
         update();
     });
-//    timer->start(1000);
+    timer->start(1000);
 }
 
 void RasterWindow::paintEvent(QPaintEvent * event)

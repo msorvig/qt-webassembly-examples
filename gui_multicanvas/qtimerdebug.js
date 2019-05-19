@@ -4,6 +4,7 @@ var g_qtimerdebug_realClearTimeout = undefined;
 var g_qtimerdebug_realClearInterval = undefined;
 
 var g_qtimerdebug_isRunning = true;
+var g_qtimerdebug_timerTicks = 0;
 var g_qtimerdebug_currentTimerId = -1;
 var g_qtimerdebug_activeTimeOuts = []; // array of { id, milliseconds, targetTime, func }
 var g_qtimerdebug_activeTimersChangedCallback = undefined;
@@ -26,13 +27,18 @@ function qtimerdebug_fireNextTimer()
     if (timer === undefined)
         return;
     timer.func();
+    ++g_qtimerdebug_timerTicks;
 }
 
 function qtimerdebug_fireAllTimers()
 {
-    do {
-        qtimerdebug_fireNextTimer();
-    } while (g_qtimerdebug_activeTimeOuts.length > 0);
+    let timerList = g_qtimerdebug_activeTimeOuts; // fire currently registered timers only.
+    g_qtimerdebug_activeTimeOuts = [];
+    while (timerList.length > 0) {
+        let timer = timerList.shift();
+        timer.func();
+        ++g_qtimerdebug_timerTicks;
+    }
 }
 
 function qtimerdebug_fireElapsedTimers()
@@ -41,8 +47,10 @@ function qtimerdebug_fireElapsedTimers()
     let fire = g_qtimerdebug_activeTimeOuts.filter(timer => timer.targetTime <= now);
     let keep = g_qtimerdebug_activeTimeOuts.filter(timer => timer.targetTime > now);
     g_qtimerdebug_activeTimeOuts = keep;
-    fire.map(timer => timer.func());
-    qtimerdebug_updateActiveTimersChangedCallback();
+    fire.map(timer => {
+        timer.func();
+        ++g_qtimerdebug_timerTicks;
+    });
 }
 
 function qtimerdebug_nextTimerId()
@@ -54,8 +62,10 @@ function qtimerdebug_nextTimerId()
 function qtimerdebug_setRunning(running)
 {
     g_qtimerdebug_isRunning = running;
-    if (running)
+    if (running) {
         qtimerdebug_fireElapsedTimers();
+        qtimerdebug_updateActiveTimersChangedCallback();
+    }
 }
 
 function qtimerdebug_step()
@@ -81,7 +91,7 @@ function qtimerdebug_updateActiveTimersChangedCallback()
         return;
     let timeouts = g_qtimerdebug_activeTimeOuts.map(timer => timer.milliseconds);
     let intervals = [];
-    g_qtimerdebug_activeTimersChangedCallback(timeouts, intervals);
+    g_qtimerdebug_activeTimersChangedCallback(g_qtimerdebug_timerTicks, timeouts, intervals);
 }
 
 function qtimerdebug_setTimeout(func, milliseconds)
@@ -96,7 +106,10 @@ function qtimerdebug_setTimeout(func, milliseconds)
     g_qtimerdebug_activeTimeOuts.sort((a, b) => a.targetTime > b.targetTime);
 
     if (g_qtimerdebug_isRunning)
-        g_qtimerdebug_realSetTimeout(qtimerdebug_fireElapsedTimers, milliseconds);
+        g_qtimerdebug_realSetTimeout(() => {
+            qtimerdebug_fireElapsedTimers();
+            qtimerdebug_updateActiveTimersChangedCallback();
+        }, milliseconds);
 
     qtimerdebug_updateActiveTimersChangedCallback();
     return timer.id;

@@ -6,7 +6,7 @@ int main(int argc, char **argv)
 {
     QGuiApplication app(argc, argv); // for the event loop
 
-    QUrl url("http://localhost:8000/core_network.wasm");
+    QUrl url("core_network.wasm");
     QNetworkRequest request(url);
     QNetworkAccessManager manager;
     QObject::connect(&manager, &QNetworkAccessManager::finished, [](QNetworkReply *reply) {

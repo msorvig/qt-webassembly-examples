@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en-us">
+  <meta charset="utf-8">
+  <head>
+      <style>
+      html, body { padding: 0; margin : 0; overflow:hidden; height: 100% }
+      canvas { border: 0px none; background-color: white; height:100%; width:100%;  }
+      canvas { outline: 0px solid transparent; caret-color: transparent; cursor:default }
+      </style>
+      
+      <script type='text/javascript'>
+          var g_popup = undefined;
+          
+          function init() {
+              console.log("init");
+              let canvas = document.getElementById("qtcanvas_main")
+              doodleOnCanvas(canvas, "blue");
+          }
+          
+          function doodleOnCanvas(canvas, color){
+              var ctx = canvas.getContext("2d");
+              ctx.beginPath();
+              ctx.rect(20, 20, 150, 100);
+              ctx.fillStyle = color;
+              ctx.fill();
+          }
+          
+          function openPopup() {
+              console.log("openPopup");
+              g_popup = window.open("popup.html");
+              g_popup.onload = popupOpened;
+              g_popup.onunload = popupClosed;
+          }
+          function closePopup() {
+              console.log("closePopup");
+              if (g_popup == undefined)
+                  return;
+              g_popup.close();
+              g_popup = undefined;
+          }
+          
+          function popupOpened() {
+              console.log("popupOpened");
+              let canvas = g_popup.document.getElementById("qtcanvas_popup")
+              console.log(canvas);
+              doodleOnCanvas(canvas, "green");
+              
+          }
+
+          function popupClosed() {
+              console.log("popupClosed");
+          }
+      </script>
+  </head>
+  
+  <body onload=init()>
+      Canvas below<br>
+      <button onclick="openPopup()">Open Popup</button><br>
+      <button onclick="closePopup()">Close Popup</button><br>
+      <canvas id="qtcanvas_main" oncontextmenu="event.preventDefault()" contenteditable="true"></canvas>
+  </body>
+</html>

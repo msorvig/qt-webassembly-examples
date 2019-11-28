@@ -18,8 +18,8 @@ Blog post on emscripten sockets:
 Implementation Overview
 -----------------------
 
-client.c : The echo client
-server.c : The echo server
+    client.c : The echo client
+    server.c : The echo server
 
 Run "make" to make native and WebAssembly builds:
 
@@ -27,14 +27,13 @@ Run "make" to make native and WebAssembly builds:
     - OUT/nativeclient
     - OUT/client.html and client.js
 
-Server: listens on localhost:8888
-Websockify: forwards from localhost:8887 -> localhost:8888
+* Server: listens on localhost:8888
+* Websockify: forwards from localhost:8887 -> localhost:8888
+   -  websockify localhost:8887 localhost:8888
 
-    websockify localhost:8887 localhost:8888
-
-Client: connects to
-     native     : localhost:8888
-     webassembly: localhost:8887
+* Client: connects to
+    - native     : localhost:8888
+    - webassembly: localhost:8887
 
 Client
 ------

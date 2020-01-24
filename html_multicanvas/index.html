@@ -9,10 +9,37 @@
     let installMouseEventHandlers = true;
     let captureOnPointerDown = false;
     let installMoveEventHandlers = false;
+    let installDocumentMouseEventHandlers = false;
 
     function init() {
         initCanvas(document.getElementById("canvas1"));
         initCanvas(document.getElementById("canvas2"));
+
+        if (installDocumentMouseEventHandlers) {
+            document.addEventListener('mousedown', (event) => {
+              console.log('Document Mouse down event');
+            });
+            document.addEventListener('mouseup', (event) => {
+              console.log('Document Mouse up event');
+            });
+            if (installMoveEventHandlers) {
+                document.addEventListener('mousemove', (event) => {
+                  console.log('Document Mouse move event');
+               });
+            }
+            document.addEventListener('mouseenter', (event) => {
+              console.log('Document Mouse enter event');
+            });
+            document.addEventListener('mouseleave', (event) => {
+              console.log('Document Mouse leave event');
+            });
+            document.addEventListener('mouseover', (event) => {
+              console.log('Document Mouse over event');
+            });
+            document.addEventListener('mouseout', (event) => {
+              console.log('Document Mouse out event');
+            });
+        }
     }
 
     function initCanvas(canvas) {

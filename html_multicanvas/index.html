@@ -1,0 +1,92 @@
+<html>
+<head>
+<title>Multiple Canvases and Events</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+<script>
+    // select event types and behaviors
+    let installPointerEventHandlers = true;
+    let installMouseEventHandlers = true;
+    let captureOnPointerDown = false;
+    let installMoveEventHandlers = false;
+
+    function init() {
+        initCanvas(document.getElementById("canvas1"));
+        initCanvas(document.getElementById("canvas2"));
+    }
+
+    function initCanvas(canvas) {
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle = "blue";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        if (installPointerEventHandlers) {
+            canvas.addEventListener('pointerdown', (event) => {
+              console.log('Pointer down event ' + canvas.id);
+              if (captureOnPointerDown)
+                  canvas.setPointerCapture(event.pointerId);
+            });
+            canvas.addEventListener('pointerup', (event) => {
+              console.log('Pointer up event ' + canvas.id);
+              if (captureOnPointerDown)
+                  canvas.releasePointerCapture(event.pointerId);
+            });
+            if (installMoveEventHandlers) {
+                canvas.addEventListener('pointermove', (event) => {
+                   console.log('Pointer move event ' + canvas.id);
+                });
+            }
+            canvas.addEventListener('pointerout', (event) => {
+              console.log('Pointer out event ' + canvas.id);
+            });
+            canvas.addEventListener('pointerover', (event) => {
+              console.log('Pointer over event ' + canvas.id);
+            });
+            canvas.addEventListener('pointeenter', (event) => {
+              console.log('Pointer enter event ' + canvas.id);
+            });
+            canvas.addEventListener('pointeleave', (event) => {
+              console.log('Pointer leave event ' + canvas.id);
+            });
+        }
+        if (installMouseEventHandlers) {
+            canvas.addEventListener('mousedown', (event) => {
+              console.log('Mouse down event ' + canvas.id);
+            });
+            canvas.addEventListener('mouseup', (event) => {
+              console.log('Mouse up event ' + canvas.id);
+            });
+
+            if (installMoveEventHandlers) {
+                canvas.addEventListener('mousemove', (event) => {
+                  console.log('Mouse move event ' + canvas.id);
+               });
+            }
+            canvas.addEventListener('mouseenter', (event) => {
+              console.log('Mouse enter event ' + canvas.id);
+            });
+            canvas.addEventListener('mouseleave', (event) => {
+              console.log('Mouse leave event ' + canvas.id);
+            });
+            canvas.addEventListener('mouseover', (event) => {
+              console.log('Mouse over event ' + canvas.id);
+            });
+            canvas.addEventListener('mouseout', (event) => {
+              console.log('Mouse out event ' + canvas.id);
+            });
+        }
+    }
+</script>
+
+</head>
+
+<body onload="init();">
+    Pointer and Mouse Events for multiple canvases (check page source and console output)
+    <BR>
+    <canvas id="canvas1" width="300" height="300"></canvas>
+    <BR>
+    <BR>
+    <canvas id="canvas2" width="300" height="300"></canvas>
+</body>
+
+</html>

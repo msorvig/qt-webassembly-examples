@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 
 #include <emscripten.h>
@@ -5,99 +6,76 @@
 
 extern "C" {
 
-void main_func(void *context);
+void (*g_sleep_fn)();
+void (*g_wake_fn)();
 
-void start_main_loop()
+// Test emscripten_sleep, also recursively
+void tst_emscripten_sleep()
 {
-    int infinite_loop = 1; // simulate no-return
-    int fps = 0;
-    void *context = nullptr;
-    emscripten_set_main_loop_arg(main_func, context, fps, infinite_loop);
+    g_sleep_fn = tst_emscripten_sleep;
+    g_wake_fn = nullptr;
+
+    puts("sleeping for 3 seconds - press sleep button to sleep again");
+    emscripten_sleep(3000);
+    puts("woke up from sleep");
 }
 
-// prototype implementaton of Qt envent loop functions:
-//   processEvents(bool waitForEvents) : processes pending events (mouse/keboard/timers etc). Waits for 
-//.                                      the next event if waitForEvents is set
-//   interrupt()                       : interrupts a current processEvents() call, making it return
-//                                       as early as possible
-bool g_interrupt = false;
+// Implement suspend/wake using Asyncify.handleSleep, as suggested on
+// https://emscripten.org/docs/porting/asyncify.html
+EM_JS(void, qt_suspend, (), {
+  out("qt_suspend");
+  let sleepFn = function(wakeUp) {
+      if (Module.qtWakeUps == undefined)
+          Module.qtWakeUps = [];
+      Module.qtWakeUps.push(wakeUp);
+  };
+  return Asyncify.handleSleep(sleepFn);
+});
 
-void interrupt()
+EM_JS(void, qt_resume, (), {
+  out("qt_resume");
+  Module.qtWakeUps.pop()();
+  out("qt_resume done");
+});
+
+void tst_custom_suspend()
 {
-    puts("C interrupt");
-    g_interrupt = true;
+    g_sleep_fn = tst_custom_suspend;
+    g_wake_fn = qt_resume;
+    
+    puts("suspending - press wake button to wake");
+    qt_suspend();
+    puts("woke up from suspending");
 }
 
-void processEvents(bool waitForEvents)
+// 
+void html_sleep()
 {
-    puts("  processEvents");
-    
-    // process events until interrupted. Implemented using emscripten_sleep, which
-    // has the unfortunate side effect that we must poll for the g_interrupt state
-    // at regular intervals.
-    const int sleepTime = waitForEvents ? 200 : 0; // 0: process all pending events, then return
-    do {
-        puts("  emscripten_sleep");
-        emscripten_sleep(sleepTime);
-    } while (waitForEvents && !g_interrupt);
-    g_interrupt = false;
-    
-    puts("  processEvents done");
+    if (g_sleep_fn)
+        g_sleep_fn();
+}
+
+void html_wake()
+{
+    if (g_wake_fn)
+        g_wake_fn();
 }
 
 EMSCRIPTEN_BINDINGS(my_module) {
-    emscripten::function("interrupt", &interrupt);
-}
-
-void main_func(void *context)
-{
-    puts("C++: main_func main loop callback");
-    emscripten_cancel_main_loop();
-
-    puts("sleeping");
-    emscripten_sleep(100);
-    puts("woke up");
-
-    puts("processEvents once");
-    processEvents(false);
-
-    puts("processEvents wait");
-    processEvents(true);
-
-    puts("processEvents all done");
+    emscripten::function("html_sleep", &html_sleep);
+    emscripten::function("html_wake", &html_wake);
 }
 
 int main()
 {
-    puts("C++: hello from main");
+    puts("running test case");
 
-    start_main_loop();
-
-    puts("this will not print - start_main_loop never returns");
-
-    return 0;
-}
-
-// Possible new emscripten API for better control over suspend/resume
-extern void emscripten_yield(); // process all pending browser/JS events, then return
-extern void emscripten_suspend(); // suspend until emscripten_resume is called; keep processing events
-extern void emscripten_resume(); // resume at previous emscripten_suspend site.
-
-void interrupt_2()
-{
-    g_interrupt = true;
-    emscripten_resume(); 
-}
+    // Comment in one test case:
+    // tst_emscripten_sleep();
+    tst_custom_suspend();
     
-void processEvents_2(bool waitForEvents)
-{
-    if (!waitForEvents) {
-        emscripten_yield(); 
-    } else {
-        do {
-            emscripten_suspend();
-        } while (!g_interrupt);
-    }
+    puts("done running test case");
+    return 0;
 }
 
 }

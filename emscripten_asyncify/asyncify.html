@@ -2,22 +2,12 @@
 <head>
     <meta charset="utf-8"/>
 </head>
-<body onload="init()">
+<body onload>
     <div>
         Qt event loop with binaryen asyncify prototype (check console output)
     </div>
-    <button onclick="interrupt()">Interrupt</button>
-    <script>
-        function init() {
-            
-        }
-        
-        function interrupt() {
-            console.log("JS interrupt");
-            Module.interrupt();
-        }
-
-    </script>
-    <script src="main.js"></script> 
+    <button onclick="Module.html_sleep()">Sleep (Again)</button>
+    <button onclick="Module.html_wake()">Wake</button>
+    <script src="main.js"></script>
 </body>
 </html>

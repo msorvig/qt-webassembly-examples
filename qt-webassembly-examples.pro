@@ -9,6 +9,7 @@ SUBDIRS = \
     gui_localfiles \
     gui_multicanvas \
     gui_popup \
+    gui_settings \
     widgets_wiggly \
     quick_hellosquare \
     quick_clocks \

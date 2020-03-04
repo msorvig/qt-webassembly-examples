@@ -34,7 +34,8 @@ EM_JS(void, qt_suspend, (), {
 
 EM_JS(void, qt_resume, (), {
   out("qt_resume");
-  Module.qtWakeUps.pop()();
+  let wakeUp = Module.qtWakeUps.pop();
+  setTimeout(wakeUp); // workaround for https://github.com/emscripten-core/emscripten/issues/10515
   out("qt_resume done");
 });
 

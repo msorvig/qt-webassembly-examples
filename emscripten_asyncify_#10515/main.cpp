@@ -17,8 +17,9 @@ EM_JS(void, qt_resume, (), {
         out("err: resume called when not suspended");
         return;
     }
-    Module.qtWakeUp();
+    let wakeUp = Module.qtWakeUp;
     Module.qtWakeUp == undefined;
+    setTimeout(wakeUp); // workaround for https://github.com/emscripten-core/emscripten/issues/10515
 });
 
 EMSCRIPTEN_BINDINGS(my_module) {

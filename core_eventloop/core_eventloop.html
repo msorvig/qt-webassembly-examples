@@ -1,0 +1,86 @@
+<html>
+<head>
+    <meta charset="utf-8"/>
+</head>
+<body onload="init()">
+    <div>
+        Qt Core Wasm event loop test harness (output on console).
+        <br><br>
+        The test harness starts two event dispatchers: <br>
+         <ul>
+          <li>Main Thread Event Dispatcher</li>
+          <li>Secondary Thread Event Dispatcher</li>
+        </ul>
+
+        <p style="width: 500px;">
+        HTML Events can be posted to
+        the event dispatchers from the main thread or from a service
+        thread. The event dispatcher should wake up and process the
+        event in all cases.
+        </p>
+    </div>
+    Events
+    <br>
+    <input id="postFromMainThread" type="checkbox" checked>
+    <label for="postFromMainThread">Post from Main Thread</label>
+    <input id="postFromServiceThread" type="checkbox">
+    <label for="postFromServiceThread">Post from Service Thread</label>
+    <br>
+    <input id="postToMainThread" type="checkbox" checked>
+    <label for="postToMainThread">Post to main Thread</label>
+    <input id="postToSecondaryThread" type="checkbox">
+    <label for="postToSecondaryThread">Post to secondary Thread</label>
+
+    <br><br>
+    <button onclick="callPostEvents();">Post Events;</button>
+
+    <br>
+    Timers
+    <br>
+    <label for="timeout">Timeout:</label>
+    <input id="timeout" type="number" value=500></input>
+    <button onclick="Module.registerMainThreadTimer(inputValue('timeout'))">Register main thread Timer</button>
+    <button onclick="Module.registerSecondaryThreadTimer(inputValue('timeout'))">Register secondary thread Timer</button>
+    <button onclick="Module.clearTimers()">Clear Timers</button>
+
+    <p style="width: 500px;">
+    Event Loop Exec (main thread).
+    </p>
+    <button onclick="Module.appExec()">app.exec()</button>
+    <button onclick="Module.appQuit()">app.quit()</button>
+    <button onclick="Module.eventLoopExec()">QEventLoop::exec()</button>
+    <button onclick="Module.eventLoopQuit()">QEventLoop::quit()</button>
+    <br><br>
+
+
+    <script type="text/javascript" src="qtloader.js"></script>
+    <script>
+        function checkboxValue(id) {
+            return document.getElementById(id).checked;
+        }
+
+        function inputValue(id) {
+            return parseInt(document.getElementById(id).value);
+        }
+
+        function callPostEvents() {
+            Module.postEventsWithArgs(checkboxValue("postFromMainThread"), checkboxValue("postFromServiceThread"),
+                                      checkboxValue("postToMainThread"), checkboxValue("postToSecondaryThread"));
+        }
+
+        function init() {
+            console.log("JavaScript: Init");
+            qtloader = QtLoader({
+                showError: function(errorText) {
+                    console.log("error " + errorText);
+                },
+                environment : {
+                    QT_LOGGING_RULES : "qt.eventdispatcher.debug=true;qt.eventdispatcher.timers=true"
+                }
+            });
+            qtloader.loadEmscriptenModule("core_eventloop");
+        }
+    </script>
+
+</body>
+</html>

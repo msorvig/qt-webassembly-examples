@@ -18,6 +18,7 @@ SUBDIRS = \
 
 qtConfig(thread): SUBDIRS += widgets_mandelbrot
 qtHaveModule(mqtt):qtHaveModule(websockets): SUBDIRS += mqtt_simpleclient
+qtHaveModule(quick3d):SUBDIRS += quick3d_hellocube
 
 # Add submodule examples if they have been synced
 exists($$PWD/SensorTagDemo/SensorTagDemo.pro) : SUBDIRS += SensorTagDemo

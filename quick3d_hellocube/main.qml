@@ -50,7 +50,7 @@
 
 import QtQuick 2.14
 import QtQuick.Window 2.14
-import QtQuick3D 1.14
+import QtQuick3D 1.15
 
 Window {
     id: window
@@ -127,12 +127,12 @@ Window {
 
         PerspectiveCamera {
             id: camera
-            position: Qt.vector3d(0, 200, -300)
-            rotation: Qt.vector3d(30, 0, 0)
+            position: Qt.vector3d(0, 200, 300)
+            eulerRotation.x: -30
         }
 
         DirectionalLight {
-            rotation: Qt.vector3d(30, 0, 0)
+            eulerRotation.x: -30
         }
 
         Model {
@@ -149,15 +149,15 @@ Window {
                     }
                 }
             ]
-            rotation: Qt.vector3d(0, 90, 0)
+            eulerRotation.y: 90
             //! [3dcube]
 
-            SequentialAnimation on rotation {
+            SequentialAnimation on eulerRotation {
                 loops: Animation.Infinite
                 PropertyAnimation {
                     duration: 5000
-                    to: Qt.vector3d(360, 0, 360)
                     from: Qt.vector3d(0, 0, 0)
+                    to: Qt.vector3d(360, 0, 360)
                 }
             }
         }

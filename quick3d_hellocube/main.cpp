@@ -52,7 +52,7 @@
 #include <QQmlApplicationEngine>
 
 #include <QtGui>
-//#include <QtQuick3D/qquick3d.h>
+#include <QtQuick3D/qquick3d.h>
 
 int main(int argc, char *argv[])
 {
@@ -60,7 +60,9 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
-  //  QSurfaceFormat::setDefaultFormat(QQuick3D::idealSurfaceFormat());
+    // Commented out: default to WebGL 1 (OpenGL ES 2), instead of 
+    // attempting to use broken 
+    // QSurfaceFormat::setDefaultFormat(QQuick3D::idealSurfaceFormat());
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

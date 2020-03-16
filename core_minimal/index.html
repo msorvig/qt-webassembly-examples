@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>core_javascript_interop</title>
+  </head>
+  <body onload>
+      <p>
+    This example demonstrates how to instantiate a minimal qtcore-based application
+    directly using the emscripten API, without using qtloader.js. See the JavaScript
+    console for application output.
+     </p>
+     
+    <script type='text/javascript'>
+        // Note: Qt currently uses the build mode where emscripten uses
+        // a global Module object, and loads and instantiates the wasm
+        // applicaiton module when its script is loaded. This happens for
+        // core_minimal.js below.
+        //
+        // Qt will at some point start setting -s MODULARIZE=1, which will
+        // change how this works (see emscripten documentation). Users of
+        // qtloader.js should not be affected by this change.
+        var Module = {
+            onRuntimeInitialized: _ => {
+                // Call C++ function
+                let result = Module.lerp(10, 20, 0.5);
+                console.log("JS: The result is " + result);
+            }
+        }
+    </script>
+    <script src="core_minimal.js"></script>
+        
+  </body>
+</html>
+
+
+
+
+

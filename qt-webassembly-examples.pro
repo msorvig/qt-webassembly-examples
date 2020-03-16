@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS = \
+    core_minimal \
     core_network \
     core_threads \
     gui_opengl \

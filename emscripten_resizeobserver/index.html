@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <style type="text/css">
+  canvas {
+      width: 50%;
+      height: 75%;
+  }
+  </style>
+
+  <script>
+    function $(id) {
+      return document.getElementById(id)
+    }
+
+    function onload() {
+        var module = {}
+        Module(module);
+    }
+
+  </script>
+</head>
+
+<body onload=onload()>
+  Sample: resize observer
+  <canvas id="resizeTestCanvas"> </canvas>
+  {{{ SCRIPT }}}
+</body>
+
+</html>

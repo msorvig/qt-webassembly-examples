@@ -11,6 +11,7 @@ SUBDIRS = \
     gui_multicanvas \
     gui_popup \
     gui_settings \
+    gui_qimagereader \
     widgets_scroll \
     widgets_wiggly \
     quick_hellosquare \

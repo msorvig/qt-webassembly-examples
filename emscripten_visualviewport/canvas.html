@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<meta name="viewport" content="width=device-width">
+
+<head>
+  <style type="text/css">
+  canvas {
+      width: 20%;
+      height: 200px;
+  }
+  </style>
+
+
+  <script>
+    function $(id) {
+      return document.getElementById(id)
+    }
+
+    function onload() {
+        var module = {}
+        
+        console.log("window.devicePixelRatio " + window.devicePixelRatio);
+        let vvp = window.visualViewport
+        console.log("window.visualViewport " + vvp);
+        if (vvp) {
+            console.log("window.visualViewport.scale " + vvp.scale);
+            vvp.onresize = () => {
+                let effectiveDevicePixelRatio = window.devicePixelRatio * vvp.scale
+                console.log("visualViewport resize scale " + vvp.scale + 
+                                      " devicePixelRatio " + window.devicePixelRatio +
+                             " effectiveDevicePixelRatio " + effectiveDevicePixelRatio);
+            }
+            vvp.onscroll = () => {
+                console.log("visualViewport scroll scale " + vvp.scale + " devicePixelRatio" + window.devicePixelRatio)
+            }
+
+        }
+        console.log("window.screen.width " + window.screen.width);
+        console.log("window.innerWidth " + window.innerWidth);
+        let viewport = document.getElementById("viewport");
+        if (viewport) {
+            console.log("document->viewport.scale " + viewport.scale);
+        }
+        
+       // module.canvas = $("canvas-a"); // can be omitted if native code does not
+                                         // use the default canvas
+        Module(module);
+    }
+
+  </script>
+</head>
+<body onload=onload()>
+  Canvas sizing test case (output on javascript console)
+  <div id="screen-container">
+      <canvas id="canvas"> </canvas>
+  </div>
+    <script async type="text/javascript" src="canvas.js"></script>
+</body>
+</html>
+
+

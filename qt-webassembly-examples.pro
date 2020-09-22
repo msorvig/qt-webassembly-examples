@@ -13,6 +13,7 @@ SUBDIRS = \
     gui_settings \
     gui_qimagereader \
     widgets_scroll \
+    widgets_openglwidget \
     widgets_wiggly \
     quick_hellosquare \
     quick_clocks \

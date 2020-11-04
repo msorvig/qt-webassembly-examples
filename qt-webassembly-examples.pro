@@ -15,6 +15,7 @@ SUBDIRS = \
     widgets_scroll \
     widgets_openglwidget \
     widgets_wiggly \
+    widgets_quick \
     quick_hellosquare \
     quick_clocks \
     quick_controls2_gallery \

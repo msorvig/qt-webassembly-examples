@@ -11,7 +11,49 @@
     function $(id) {
       return document.getElementById(id)
     }
+
+    // Clipboard access using the Clipboard API, as documented on
+    // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Interact_with_the_clipboard
+
+    function pasteFromClipboard() {
+        // Ask for permission first, as documented
+        navigator.permissions.query({name: "clipboard-read"}).then(result => {
+          console.log("query: " + result.state);
+          if (result.state == "granted" || result.state == "prompt") {
+              navigator.clipboard.readText().then(text => {
+                  console.log("clipboard.readText(): " + text);
+              });
+          }
+        });
+    }
     
+    function pasteFromClipboardDirect() {
+        // Access the clipboard directly: also works - but is perhaps not officially supported?
+        navigator.clipboard.readText().then(text => {
+            console.log("clipboard.readText(): " + text);
+        });
+    }
+
+    function copyToClipboard() {
+        navigator.permissions.query({name: "clipboard-write"}).then(result => {
+            if (result.state == "granted" || result.state == "prompt") {
+                navigator.clipboard.writeText("TEST: write using clipboard.writeText()").then(function() {
+                    console.log("clipboard write OK")
+                }, function() {
+                    console.log("clipboard write failed")
+                });
+            }
+        });
+    }
+
+    function copyToClipboardDirect() {
+        navigator.clipboard.writeText("TEST: direct write using clipboard.writeText()").then(function() {
+            console.log("clipboard write OK")
+        }, function() {
+            console.log("clipboard write failed")
+        });
+    }
+
     function installEventHandlers(){
       console.log("installEventHandlers")
       var canvas = $("testcanvas");
@@ -39,11 +81,19 @@
 
       canvas.addEventListener('keydown', function (ev) {
         console.log('canvas keydown');
+        if (ev.key == "v")  {
+            pasteFromClipboard();
+            //pasteFromClipboardDirect();
+        }
        // ev.preventDefault();
       }, false);
 
       canvas.addEventListener('keyup', function (ev) {
          console.log('canvas keyup');
+         if (ev.key == "c") {
+             copyToClipboard();
+             //copyToClipboardDirect();
+        }
         // ev.preventDefault();
       }, false);
 

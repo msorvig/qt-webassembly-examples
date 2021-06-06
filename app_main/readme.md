@@ -107,9 +107,8 @@ Emscripten’s asyncify feature supports blocking API like QApplication::exec(),
 supports only one level of blocking calls. We recommend reserving this for other uses, such
 as showing modal dialogs. See the asyncify section below [TODO].
 
-##  Related Topics
 
-### EXIT_RUNTIME
+## EXIT_RUNTIME
 
 By default, Emscripten does not shut down the C++ runtime when main() exits, which means that the app
 can continue to run. It is possible to change this behavior by passing the "-s EXIT_RUNTIME=1" flag
@@ -120,3 +119,18 @@ However, this does not appear to work well when calling emscripten_pause_main_lo
 See emscripten_exit_runtime/.
 
 Qt 5 sets -s EXIT_RUNTIME=1. Qt 6 does not.
+
+## QDialog::exec()
+
+QDialog::exec() works only partially on Qt for WebAssambly. The dialog will be shown, the user can interact with
+it and the appropriate signals will be emitted on close.
+
+However, the exec() call never returns, stack content at the time of the exec() call is leaked, and the exec() call
+may interfere with event processing of the current event.
+
+Based on this, QDialog::exec() is not supported and we reccomend using QDialog::show() instead.
+
+See the asyncify section below [TODO].
+
+## Asyncify
+[TODO]

@@ -1,0 +1,8 @@
+SIMD feature detect from https://github.com/GoogleChromeLabs/wasm-feature-detect,
+but less obscure :) (no fancy build system)
+
+Prints an error to the javascript console if SIMD is not supported, for example: 
+
+     CompileError: WebAssembly.Module doesn't parse at byte 15: can't get 0th Type's return value
+
+Rebuild the wasm binary with "wat2wasm --enable-simd simd.wat", if needed.

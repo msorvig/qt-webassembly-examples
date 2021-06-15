@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+     <meta charset="utf-8" />
+    <script>
+        async function load() {
+            let response = await fetch('simd.wasm');
+            let wasm_bytes = await response.arrayBuffer();
+            let module = await WebAssembly.compile(wasm_bytes);
+            console.log(module);
+        }
+        console.log("hello");
+        load();
+    </script>
+</head>
+<html>

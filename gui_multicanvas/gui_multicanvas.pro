@@ -10,6 +10,8 @@ SOURCES += \
 HEADERS += rasterwindow.h
 SOURCES += rasterwindow.cpp
 
+QT += opengl
+
 # optional widgets testing
 # QT += widgets
 # DEFINES += HAVE_WIDGETS

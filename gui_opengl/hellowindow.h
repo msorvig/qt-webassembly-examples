@@ -38,9 +38,9 @@
 **
 ****************************************************************************/
 
-#include <QOpenGLWindow>
-#include <QColor>
-#include <QOpenGLShaderProgram>
+#include <QtGui/QColor>
+#include <QtOpenGL/QOpenGLWindow>
+#include <QtOpenGL/QOpenGLShaderProgram>
 
 class HelloWindow : public QOpenGLWindow
 {

@@ -21,6 +21,7 @@
         var windowCascade = 50;
         var windowIndex = 0;
         var createWindowButton = undefined;
+        var nativeWindowsEnabled = false;
         var qtLoader = undefined;
 
         function init()
@@ -33,6 +34,10 @@
             });
             createWindowButton = qwebui_button(appcontrolelement, "Create Window", createAdditinalWindow);
             createWindowButton.setEnabled(false);
+
+            nativeWindowsCheckbox = qwebui_checkbox(appcontrolelement, "Native Windows", false, (checked) => {
+                nativeWindowsEnabled = checked;
+            });
 
             // Set up RequestAnimationFrame Control
             qrafdebug_interpose();
@@ -106,22 +111,39 @@
             qtWindows.map(function(window) { window.visible = true });
         }
 
-        // Creates a <canvas> which usess 100% of the available size.
-        function createCanvas(i) {
-            var canvas = document.createElement("canvas");
-            canvas.id = "QtCanvas" + i;
-            canvas.style.width = "100%";
-            canvas.style.height = "100%";
-            return canvas;
-        }
-
         function createNumberedWindow(number, x, y, )
         {
             var window = new Window(x, y);
-            window.title = "Canvas / QScreen " + number;
-            window.content = createCanvas(number);
+            window.title = "QScreen " + number;
             window.onClose(() => qtloader.removeCanvasElement(window.content));
             window.onResize(() => qtloader.resizeCanvasElement(window.content));
+
+            // Create window content, which is either a <canvas> or <div>. Each
+            // content element corresponds to a QScreen.
+            // If <canvas>:
+            //   * QScreen is first-class, i.e. is backed by a native html element
+            //   * Fullscreen raster or GL windows are supported
+            //   * Qt supports compositing raster windows
+            //   * Qt draws window decorations for non-fullscreen windows
+            // If <div>:
+            //   * QScreen and QWindow are first-class
+            //   * Qt maintains canvas elements for each window
+            //   * Fullscreen raster or GL windows are supported
+            //   * The browser composits window content (raster and GL).
+            //   * Transient child windows (dialogs) may not be supported
+            var content = undefined;
+            let useCanvas = true;
+            if (useCanvas) {
+                content = document.createElement("canvas");
+                content.id = "QtCanvas" + i;
+            } else {
+                content = document.createElement("div");
+                content.id = "QtContainer" + i;
+            }
+            content.style.width = "100%";
+            content.style.height = "100%";
+            window.content = content;
+
             return window;
         }
 

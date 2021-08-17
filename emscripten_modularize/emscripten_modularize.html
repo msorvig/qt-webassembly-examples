@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+
+    <title>corelib</title>
+
+    <script type="text/javascript" src="main.js"></script>
+    <script type='text/javascript'>
+        async function init() {
+
+            // Set environemnt varibale using config/preRun. Note that
+            // this requires adding -s EXPORTED_RUNTIME_METHODS='[ENV]'
+            // See https://github.com/emscripten-core/emscripten/issues/9827
+            // and https://github.com/emscripten-core/emscripten/pull/10777
+            var config = {
+                preRun: [function(module) {
+                    console.log("preRun");
+                    module.ENV.foo = "bar"; // Note: key must be lowercase!
+                }]
+            };
+
+            //
+            console.log("init(): Creating app instance");
+            let instance = await main(config);
+            console.log("init(): App instance created");
+            document.getElementById("status").innerHTML = "Running: Check Console for output";
+        }
+    </script>
+  </head>
+  <body onload="init()">
+  <text id="status">Loading...</text>
+  </body>
+</html>

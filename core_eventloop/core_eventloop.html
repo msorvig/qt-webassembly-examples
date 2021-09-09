@@ -74,6 +74,14 @@
                 showError: function(errorText) {
                     console.log("error " + errorText);
                 },
+                showCanvas: function() {
+                    // Hack: the Emscripten module becomes available some time
+                    // after the state transition from "Loading" to "Running"
+                    // (at which point showCanvas is called), but qtloader.js does not
+                    // currently have a callback for this event.
+                    window.setTimeout(function() { Module=qtloader.module(); }, 100);
+                },
+
                 environment : {
                     QT_LOGGING_RULES : "qt.eventdispatcher.debug=true;qt.eventdispatcher.timers=true"
                 }

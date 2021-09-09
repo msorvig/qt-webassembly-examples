@@ -4,6 +4,7 @@ SUBDIRS = \
     core_minimal \
     core_network \
     core_threads \
+    core_eventloop \
     gui_opengl \
     gui_raster \
     gui_lifecycle \

@@ -20,7 +20,7 @@ SUBDIRS = \
     quick_hellosquare \
     quick_clocks \
     quick_controls2_gallery \
-    quick_controls2_testbench \
+#    quick_controls2_testbench \
 
 qtConfig(thread): {
     SUBDIRS += \

@@ -111,7 +111,7 @@
             qtWindows.map(function(window) { window.visible = true });
         }
 
-        function createNumberedWindow(number, x, y, )
+        function createNumberedWindow(number, x, y)
         {
             var window = new Window(x, y);
             window.title = "QScreen " + number;
@@ -135,10 +135,10 @@
             let useCanvas = true;
             if (useCanvas) {
                 content = document.createElement("canvas");
-                content.id = "QtCanvas" + i;
+                content.id = "QtCanvas" + number;
             } else {
                 content = document.createElement("div");
-                content.id = "QtContainer" + i;
+                content.id = "QtContainer" + number;
             }
             content.style.width = "100%";
             content.style.height = "100%";

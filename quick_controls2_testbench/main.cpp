@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<Clipboard>("App", 1, 0, "Clipboard");
     qmlRegisterType<DirectoryValidator>("App", 1, 0, "DirectoryValidator");
 
-    engine.rootContext()->setContextProperty("availableStyles", QQuickStyle::availableStyles());
+//    engine.rootContext()->setContextProperty("availableStyles", QQuickStyle::availableStyles());
 
     engine.load(QUrl(QStringLiteral("qrc:/testbench.qml")));
 

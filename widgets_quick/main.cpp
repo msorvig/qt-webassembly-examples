@@ -58,7 +58,7 @@ int main( int argc, char ** argv )
     QApplication a( argc, argv );
     
     // QQuickWidget on WASM works with the software backend only.
-    QQuickWindow::setSceneGraphBackend(QSGRendererInterface::Software);
+    QQuickWindow::setSceneGraphBackend("software");
 
     MainWindow mw;
     mw.setMinimumSize(320, 200);

@@ -34,6 +34,6 @@ qtHaveModule(mqtt):qtHaveModule(websockets): SUBDIRS += mqtt_simpleclient
 #qtHaveModule(quick3d):SUBDIRS += quick3d_hellocube
 
 # Add submodule examples if they have been synced
-exists($$PWD/SensorTagDemo/SensorTagDemo.pro) : SUBDIRS += SensorTagDemo
+#exists($$PWD/SensorTagDemo/SensorTagDemo.pro) : SUBDIRS += SensorTagDemo
 #exists($$PWD/slate/slate.pro) : SUBDIRS += slate
 #exists($$PWD/colordebugger/colordebugger.pro) : SUBDIRS += colordebugger

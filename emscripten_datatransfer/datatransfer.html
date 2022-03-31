@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <script src="main.js"></script>
+        <script>
+            window.onload = async () => {
+                // Create instance. This calls main() etc
+                let instance = await datatransfer();
+
+                // Allocate some data in an JavaScript ArrayBuffer.
+                let data = new ArrayBuffer(1024);
+                let view = new Uint8Array(data);
+                view[0] = 0; view[1] = 1; view[2] = 2;
+
+                // Process the buffer from C++ code
+                instance.processBuffer(data);
+            }
+        </script>
+    </head>
+    <body>
+        This example demonstrates how to copy data from a JavaScript buffer
+        to the heap. See source code / JavaScript console.
+    </body>
+</html>

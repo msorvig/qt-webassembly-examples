@@ -17,7 +17,9 @@ SUBDIRS = \
     widgets_textedit \
     widgets_quick \
     widgets_standarddialogs \
+    widgets_video \
     quick_hellosquare \
+    quick_animation \
     quick_clocks \
     quick_controls2_gallery \
 #    quick_controls2_testbench \

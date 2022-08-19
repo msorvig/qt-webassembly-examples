@@ -1,9 +1,10 @@
+#include <QtCore/QCoreApplication>
 #include <QtCore/QString>
 #include <QtCore/QDebug>
 
 int main(int argc, char **argv)
 {
-    QString string = "hello";
-    qDebug() << string;
+    QCoreApplication app(argc, argv);
+    qDebug() << QString("Hello from qDebug()");
 }
 

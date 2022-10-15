@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <meta charset="utf-8">
+    <title>dropzone</title>
+    
+    <script src=dropzone.js></script>
+    
+    <script>
+      function dragover_handler(ev) {
+          ev.preventDefault();
+          ev.dataTransfer.dropEffect = "move";
+      }
+      async function drop_handler(ev) {
+          ev.preventDefault();
+          let files = ev.dataTransfer.files;
+          document.getElementById("filecount").innerHTML = files.length;
+
+          for (var i = 0; i < files.length; i++) {
+              let file = files[i];
+              console.log(i + " " + file.name);
+              console.log(i + " " + file.size);
+              document.getElementById("files").innerHTML += file.name + " " + file.size + "; ";
+              let _data = await file.arrayBuffer(); // test read
+          }
+      }
+
+      function loadQt() {
+        let qtcontainer = document.getElementById("qtdroptarget");
+        let instance = createQtAppInstance({
+            qtContainerElements: [qtcontainer],
+            qtFontDpi: 72
+        });
+      }
+      document.addEventListener('DOMContentLoaded', loadQt);
+      
+    </script>
+      
+    <p>Web drop target: Drop files below</p>
+    <p>
+        File Count: <text id="filecount"> 0 </text> <br>
+        Files: <text id="files"> </text> <br>
+    </p>
+
+    <div id="droptarget" 
+    ondrop="drop_handler(event)"
+    ondragover="dragover_handler(event)"
+    style="width:300px; height:200px; background-color:steelblue"></div>
+    
+    <p>Qt drop target</p>
+    <div id="qtdroptarget" style="width:300px; height:200px;"></div>
+</html>

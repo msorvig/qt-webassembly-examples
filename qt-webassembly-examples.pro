@@ -13,6 +13,7 @@ SUBDIRS = \
     gui_settings \
     widgets_scroll \
     widgets_openglwidget \
+    widgets_openglcontextversion \
     widgets_wiggly \
     widgets_textedit \
     widgets_quick \
@@ -21,8 +22,9 @@ SUBDIRS = \
     quick_hellosquare \
     quick_animation \
     quick_clocks \
+    quick_manyitems \
     quick_controls2_gallery \
-#    quick_controls2_testbench \
+    #    quick_controls2_testbench \
 
 qtConfig(thread): {
     SUBDIRS += \
@@ -33,7 +35,7 @@ qtConfig(thread): {
 
 qtHaveModule(mqtt):qtHaveModule(websockets): SUBDIRS += mqtt_simpleclient
 
-#qtHaveModule(quick3d):SUBDIRS += quick3d_hellocube
+SUBDIRS += quick3d_hellocube
 
 # Add submodule examples if they have been synced
 #exists($$PWD/SensorTagDemo/SensorTagDemo.pro) : SUBDIRS += SensorTagDemo

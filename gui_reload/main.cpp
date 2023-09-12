@@ -62,7 +62,7 @@ void createApp()
 {
     qDebug() << "C++ createApp()";
 
-    QGuiApplication *g_app = new QGuiApplication(g_argc, g_argv);
+    g_app = new QGuiApplication(g_argc, g_argv);
     g_window = new TestWindow();
     g_window->show();
 }

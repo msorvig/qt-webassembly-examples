@@ -15,6 +15,8 @@
         let g_createAppButton = null;
         let g_destroyAppButton = null;
 
+        const module = WebAssembly.compileStreaming(fetch("gui_reload.wasm"));
+
         async function instantiateApp(targetElement) {
             const instance = await qtLoad({
                 qt: {

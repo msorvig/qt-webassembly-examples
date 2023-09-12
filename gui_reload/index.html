@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Create & destroy instance & app</title>
+    <script src="gui_reload.js"></script>
+    <script src="qtloader.js"></script>
+
+    <script>
+        let g_instance = null;
+        let g_container = null;
+
+        let g_createInstanceButton = null;
+        let g_destroyInstanceButton = null;
+        let g_createAppButton = null;
+        let g_destroyAppButton = null;
+
+        async function instantiateApp(targetElement) {
+            const instance = await qtLoad({
+                qt: {
+                    containerElements: [g_container],
+                }
+            });
+            
+            g_container.style.visibility = "visible";
+            return instance;
+        }
+
+        function createAppContainer() {
+            var divElement = document.createElement("div");
+            divElement.id = "appcontainer";
+            divElement.style.width = "320px";
+            divElement.style.height = "200px";
+            divElement.style.margin = "10px";
+            divElement.style.visibility = "hidden";
+            return divElement;
+        }
+
+        function replaceAppContainer() {
+            const newContainer = createAppContainer();
+            g_container.replaceWith(newContainer)
+            g_container = newContainer;
+        }
+
+        async function handleCreateInstance() {
+            console.log("handleCreateInstance()");
+            g_instance = await instantiateApp("appcontainer");
+            g_createInstanceButton.disabled = true;
+            g_destroyInstanceButton.disabled = false;
+            g_createAppButton.disabled = false;
+        }
+
+        function handleDestroyInstance() {
+            console.log("handleDestroyInstance()");
+            
+            // JavaScript does not have delete so we can't force destruction.
+            // Instead, clear the instance and the container which will make
+            // them eligible for garbage collection. Note that doing this without
+            // deleting the C++ application objects first may leave circular
+            // JS references, which will not be garbage collected, and leak memory.
+            g_instance = null;
+            replaceAppContainer();
+
+            g_createInstanceButton.disabled = false;
+            g_destroyInstanceButton.disabled = true;
+            g_createAppButton.disabled = true;
+            g_destroyAppButton.disabled = true;
+        }
+
+        function handleCreateApp() {
+            console.log("handleCreateApp()");
+            g_instance.createApp() // Call C++
+
+            g_createAppButton.disabled = true;
+            g_destroyAppButton.disabled = false;
+        }
+
+        function handleDestroyApp() {
+            console.log("handleDestroyApp()");
+            g_instance.destroyApp() // Call C++
+
+            g_createAppButton.disabled = false;
+            g_destroyAppButton.disabled = true;
+        }
+
+        function timerDestroyAppAndInstance() {
+            console.log("timerDestroyAppAndInstance()")
+            // We want to call handleDestroyApp(), but this function
+            // is called from a Qt event handler. Let Qt finish event
+            // processing first, before deleting the application.
+            setTimeout(() => {
+                console.log("timerDestroyAppAndInstance() timer callback")
+                handleDestroyApp();
+                handleDestroyInstance();
+            }, 0);
+        }
+
+        window.addEventListener('load', () => {
+            g_container = document.getElementById("appcontainer");
+            replaceAppContainer(); // start with a new container with the right properties
+            
+            g_createInstanceButton = document.getElementById("createInstanceButton");
+            g_destroyInstanceButton = document.getElementById("destroyInstanceButton");
+            g_createAppButton = document.getElementById("createAppButton");
+            g_destroyAppButton = document.getElementById("destroyAppButton");
+        })
+    </script>
+  </head>
+  <body>
+    <h1>Create & destroy instance & app</h1>
+    
+    <button id="createInstanceButton" onclick="handleCreateInstance()">Create instance</button>
+    <button id="destroyInstanceButton" onclick="handleDestroyInstance()" disabled>Destroy instance</button>
+    <button id="createAppButton" onclick="handleCreateApp()" disabled>Create Qt Application</button>
+    <button id="destroyAppButton" onclick="handleDestroyApp()" disabled>Destroy Qt Application</button>
+    
+    <p>App window will appear below. Double-click to self-destruct.
+
+    <div id="appcontainer"></div>
+  </body>
+</html>

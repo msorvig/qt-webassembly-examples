@@ -38,17 +38,17 @@ protected:
         QPainter painter(this);
         painter.fillRect(event->rect(), QColor(0, 0, 255));
     }
-    
+
     void mousePressEvent(QMouseEvent *event) override
     {
         if (event->button() == Qt::LeftButton)
             qDebug() << "Window" << this << "Mouse Clicked at Coordinates:" << event->position();
     }
-    
+
     void mouseDoubleClickEvent(QMouseEvent *event) override
     {
         qDebug() << "Window" << this << "double click";
-        
+
         // Shut down: delete app and instance. However, Qt is in the middle of
         // processing events so we can't delete the applicaiton object.
         // (we could call deleteLater() on this window object, but that
@@ -86,7 +86,7 @@ EMSCRIPTEN_BINDINGS(gui_reload)
 int main(int argc, char **argv)
 {
     qDebug() << "C++ main()";
-    
+
     // Emscripten frees argv when main() returns; a make copy for
     // the QGuiApplication constructor.
     g_argc = argc;

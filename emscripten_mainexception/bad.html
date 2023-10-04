@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <script>
+        async function load() {
+
+            console.log("load");
+
+            try {
+                // The following creates an instance and calls main(), which causes a stack overflow,
+                // and leafes the wasm instance in a bad / undefined state. However, the exception 
+                // is not propagated up.
+                let instance = await bad();
+
+                console.log("load done");
+
+            } catch (e) {
+                console.log(e); // control does not reach here
+            }
+        }
+        document.addEventListener('DOMContentLoaded', load);
+    </script>
+    
+    <script src="bad.js"></script>
+</body>
+</html>

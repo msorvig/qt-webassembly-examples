@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <script>
+        async function load() {
+            console.log("load");
+
+            try {
+                let instance = await bad({
+                    noInitialRun: true,
+                });
+                console.log("load done");
+
+                setTimeout(() => {
+                    try {
+                        instance._main();                        
+                    } catch (e) {
+                        console.log(e); // we do get here
+                    }
+                }, 0);
+
+            } catch (e) {
+
+            }
+        }
+        document.addEventListener('DOMContentLoaded', load);
+    </script>
+    
+    <script src="bad.js"></script>
+</body>
+</html>

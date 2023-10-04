@@ -14,16 +14,10 @@
                 });
                 console.log("load done");
 
-                setTimeout(() => {
-                    try {
-                        instance._main();                        
-                    } catch (e) {
-                        console.log(e); // we do get here
-                    }
-                }, 0);
+                instance._main(); // this can throw
 
             } catch (e) {
-
+                console.log(e); // and now we get here
             }
         }
         document.addEventListener('DOMContentLoaded', load);

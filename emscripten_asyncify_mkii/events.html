@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Microtask and Event Handling test</title>
+    <style>
+        #outerDiv {
+            width: 300px;
+            height: 500px;
+            overflow: auto;
+            position: relative;
+            border: 2px solid blue;
+        }
+    </style>
+</head>
+<body>
+    <div id="outerDiv">
+        Scroll inside this box
+    </div>
+
+    <script>
+        document.getElementById('outerDiv').addEventListener('wheel', event => {
+            console.log('Wheel event handler begin');
+            event.preventDefault();
+            
+            Promise.resolve().then(() => {
+                //console.log('Microtask preventDefault()');
+                //event.preventDefault();
+            });
+            
+            setTimeout(() => {
+                //console.log('Timeout preventDefault()');
+                //event.preventDefault();
+            }, 0);
+            console.log('Wheel event handler end');
+        });
+    </script>
+</body>
+</html>

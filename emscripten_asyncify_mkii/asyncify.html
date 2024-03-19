@@ -1,0 +1,39 @@
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <script src="main_asyncify_1.js"></script>
+    <script src="main_asyncify_2.js"></script>
+    <script>
+
+        async function start1() {
+            console.log("start1");
+            let instance1 = await Module_asyncify_1({
+                "resumeButton" : document.getElementById("resume1")
+            });
+        }
+
+        async function start2() {
+            let instance2 = await Module_asyncify_2({
+                "resumeButton" : document.getElementById("resume2")
+            });
+        }
+
+        async function init() {
+            document.getElementById("start1").addEventListener("click", start1);
+            document.getElementById("start2").addEventListener("click", start2);
+        }
+    </script>
+</head>
+<body onload="init()"">
+    <div>
+        Asyncify Suspend/resume test.
+    </div>
+    <br>
+    <button id="start1" >Start Asyncify 1</button>
+    <button id="resume1" >Resume Asyncify 1</button>
+    <br>
+    <br>
+    <button id="start2" >Start Asyncify 2</button>
+    <button id="resume2" >Resume Asyncify 2 (jspi)</button>
+</body>
+</html>

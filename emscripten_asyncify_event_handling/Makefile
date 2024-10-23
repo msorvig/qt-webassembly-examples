@@ -1,0 +1,3 @@
+all:
+	em++ requestanimationframe_resume_wasm.cpp -o requestanimationframe_resume_wasm.html -s JSPI
+	em++ requestanimationframe_resume_js.cpp -o requestanimationframe_resume_js.html -s JSPI --bind
